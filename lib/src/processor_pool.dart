@@ -3,7 +3,7 @@ import 'processor.dart';
 
 /// setup multiple isolate process to run a given function with a common 2-way
 /// communication interface shared by all the isolates
-/// 
+///
 /// ### Notes
 /// - Startup time (worst-case, 4 isolates): 800ms (200ms/isolate)
 /// - Force-kill time (worst-case, 4 isolates): 40ms (10ms/isolate)

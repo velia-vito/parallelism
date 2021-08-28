@@ -1,6 +1,6 @@
 name: processors
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
+description: setup isolates with 2-way communication with minimal overhead and maximum speed
+version: 1.0.2
 
 repository: https://github.com/MikhailZex/processors
 

@@ -3,11 +3,11 @@ import 'dart:async';
 import 'dart:isolate';
 
 /// setup an isolate process to run a given function with 2-way communication
-/// 
+///
 /// ### Notes
 /// - Startup time (worst-case): 200ms
 /// - Force-kill time (worst-case): 10ms
-/// 
+///
 class Processor<R, I> {
   // [NOTE] Complications while running async functions in a Processor:
   //
