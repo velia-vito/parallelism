@@ -1,15 +1,13 @@
-name: processors
-description: setup isolates with 2-way communication with minimal overhead and maximum speed
-version: 1.0.2
-
-repository: https://github.com/MikhailZex/processors
+name: dart_processors
+description: A sample command-line application.
+version: 2.0.0-pre.1
+# repository: https://github.com/my_org/my_repo
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: ^3.0.5
 
-# dependencies:
-#   path: ^1.8.0
 
 dev_dependencies:
-  lints: ^1.0.1
-  test: ^1.16.0
+  dart_code_metrics: ^5.7.5
+  lints: ^2.0.0
+  test: ^1.21.0

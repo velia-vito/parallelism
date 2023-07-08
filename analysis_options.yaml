@@ -1,16 +1,76 @@
-# Defines a default set of lint rules enforced for projects at Google. For
-# details and rationale, see
-# https://github.com/dart-lang/pedantic#enabled-lints.
+include: package:flutter_lints/flutter.yaml
 
-include: package:lints/recommended.yaml
-
-# For lint rules and documentation, see http://dart-lang.github.io/linter/lints.
+analyzer:
+  plugins:
+    - dart_code_metrics
 
 linter:
   rules:
-    - public_member_api_docs
+    - public_member_api_docs # ensure complete documentation
+    - package_api_docs
+    - unawaited_futures # prevent errors
+
+    - prefer_interpolation_to_compose_strings # style matters
+    - always_use_package_imports
+    - require_trailing_commas
     - prefer_single_quotes
 
-# analyzer:
-#   exclude:
-#     - path/to/excluded/files/**
+# dart_code_metrics checks (these are based on SIG standards as was found on BetterCodeHub)
+dart_code_metrics:
+  rules:
+    # General
+    - arguments-ordering
+    - avoid-collection-methods-with-unrelated-types
+    - avoid-dynamic
+    - avoid-ignoring-return-values
+    - avoid-passing-async-when-sync-expected
+    - avoid-redundant-async
+    - avoid-unnecessary-conditionals
+    - double-literal-format
+    
+    - member-ordering
+    - newline-before-return
+    - no-magic-number
+    - prefer-async-await
+    - prefer-commenting-analyzer-ignores
+    - prefer-conditional-expressions
+    - refer-correct-identifier-length:
+        max-identifier-length: 30
+        min-identifier-length: 4
+    - prefer-first
+    - prefer-immediate-return
+    - prefer-last
+    - prefer-match-file-name
+    - prefer-static-class
+
+    # Flutter specific
+    - always-remove-listener
+    - avoid-shrink-wrap-in-lists
+    - avoid-unnecessary-setstate
+    - use-setstate-synchronously
+    - avoid-expanded-as-spacer
+    - avoid-wrapping-in-padding
+    - check-for-equals-in-render-object-setters
+    - consistent-update-render-object
+    - prefer-correct-edge-insets-constructor
+    - prefer-extracting-callbacks
+    - prefer-using-list-view
+
+  metrics:
+    source-lines-of-code: 25 # 1. Write short units of code
+    cyclomatic-complexity: 7 # 2. Write simple units of code
+    number-of-parameters: 4 # 4. Keep unit interfaces small
+    halstead-volume: 200 # 8. Keep your codebase small (in terms of details you need to know and understand)
+
+    weight-of-class: 0.5 # ~. General housekeeping
+    maximum-nesting-level: 5
+
+    technical-debt:
+      threshold: 1
+      todo-cost: 1
+      ignore-cost: 3
+      ignore-for-file-cost: 5
+      as-dynamic-cost: 1
+      deprecated-annotations-cost: 3
+      file-nullsafety-migration-cost: 5
+      unit-type: "Hours"
