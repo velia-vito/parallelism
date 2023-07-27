@@ -8,9 +8,9 @@ is still not as simple as it could be. This package aims to change that.
 
 ## Code Conventions
 
-- Library level design & developers documentation—an explanation why things ended up the way they
+- Library level design & developers documentation—an explanation of why things ended up the way they
   are. Code conventions and comparative outlines of feature sets and other technical details are
-  added here too. Design consideration first and developer considerations next.
+  added here too. Design considerations first and developer considerations next.
 
 - Documentation for all public interfaces. Use this format:
 
@@ -32,7 +32,7 @@ is still not as simple as it could be. This package aims to change that.
 
 - Use descriptive variable names.
 
-- Don't ignore return values even if your not using them, use dummy variables (`_`, `__`, basically
+- Don't ignore return values even if you are not using them, use dummy variables (`_`, `__`, basically
   any number of underscores) to handle them
 
 - Keep file sizes small. Break up large 'design chunks' (eg. color) into smaller
