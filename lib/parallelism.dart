@@ -1,3 +1,66 @@
+/// ### Usage
+///
+/// The [Process] class is meant for repeated tasks that could slow down the
+/// main program. Note that the example doesn't reflect that.
+///
+/// ```dart
+/// import 'dart:io';
+/// import 'package:parallelism/parallelism.dart';
+///
+/// void main(List<String> args) async {
+///   // top directory for test
+///   final topDir = Directory(r'A:\\Code');
+///
+///   // find sub-directories that contain files and can be accessed without a Permission errors
+///   final firstSubDir = (await topDir.list().toList()).whereType<Directory>().firstWhere((element) {
+///     try {
+///       return element.listSync().whereType<File>().length > 10;
+///     } catch (e) {
+///       return false;
+///     }
+///   });
+///
+///   final lastSubDir = (await topDir.list().toList()).whereType<Directory>().lastWhere((element) {
+///     try {
+///       return element.listSync().whereType<File>().length > 10;
+///     } catch (e) {
+///       return false;
+///     }
+///   });
+///
+///   // setup up a process to list and return all file paths in the given directory
+///   var process = Process<List<String>, Directory>(
+///     processLoop: (dir) async {
+///       return (await dir.list().toList()).whereType<File>().map((e) => e.path).toList();
+///     },
+///   );
+///
+///   // Start the process and setup a listener to process the file paths that
+///   // returned
+///   var filePathListStream = await process.start();
+///   var _ = filePathListStream.listen((filePaths) {
+///     for (var path in filePaths) {
+///       print('proc: $path');
+///     }
+///   });
+///
+///   // send a directory to the process
+///   process.send(firstSubDir);
+///
+///   // NOTE: `kill` will end the process after all current inputs are processed,
+///   // a.k.a no new inputs are accepted. use `forceKill` to end it instantly
+///   process.kill();
+///
+///   // Do the same path listing here, so you can clearly differentiate which is
+///   // done in the process and what is done in the main program
+///   for (var filePath
+///       in (await lastSubDir.list().toList()).whereType<File>().map((e) => e.path).toList()) {
+///     print('main: $filePath');
+///   }
+/// }
+///
+/// ```
+///
 /// ### Design Considerations:
 ///
 /// Setting up long-running [Isolate]s with all of four Send/Receive Ports is a
@@ -35,6 +98,10 @@
 ///
 /// - The *generics* `O` and `I` refer to Output and Input types respectively.
 ///
+/// - There is also the matter of class interfaces with a mix of sync and async
+/// methods. Instead of maintaining uniformity, we defer to
+/// [effective dart guidelines on the `async` keyword](https://dart.dev/effective-dart/usage#dont-use-async-when-it-has-no-useful-effect).
+///
 /// ### External Resources
 ///
 /// - [`await for` vs `Stream.listen`, StackOverflow](https://stackoverflow.com/a/42613676),
@@ -46,5 +113,8 @@ library;
 // Dart imports:
 import 'dart:async';
 import 'dart:isolate';
+import 'dart:io';
 
+part 'process/receive_port_mod.dart';
 part 'process/process.dart';
+part 'process/process_group.dart';

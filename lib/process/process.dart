@@ -9,7 +9,9 @@ class Process<O, I> {
   late final Isolate _isolate;
 
   /// the function that is used to process data sent to the `Process`
-  late final Future<O> Function(I) _processLoop;
+  late final Future<O> Function(
+    I,
+  ) _processLoop;
 
   /// [SendPort] to send data to the `Process`
   late final SendPort _procSendPort;
@@ -24,16 +26,39 @@ class Process<O, I> {
   }) : _processLoop = processLoop;
 
   /// Start up the `Process`. Call this before sending any data to the `Process`
-  Future<Stream<O>> start({ReceivePort? customMainRecvPort}) async {
+  ///
+  /// ### Args
+  /// - `customMainRecvPort`: a custom [ReceivePort] for when you want finer
+  /// control over received data, for e.g. when you'd like to pipe the outputs
+  /// of multiple `Process`es to the same `ReceivePort`
+  ///
+  /// - `onExit`: function triggered when this `Process` terminates. This
+  /// function __*must close*__ the `customMainRecvPort`, or, the application
+  /// will not exit.
+  Future<Stream<O>> start({
+    ReceivePort? customMainRecvPort,
+    void Function()? onExit,
+  }) async {
     // Ports for Handshake/CleanUp
-    final usesCustomRecvPort = customMainRecvPort != null;
     final mainRecvPort = customMainRecvPort ?? ReceivePort();
+    final usesCustomRecvPort = customMainRecvPort != null;
+
+    if (usesCustomRecvPort && onExit == null) {
+      throw Exception('`customMainRecvPort` must be accompanied with a custom '
+          '`onExit` that closes the `ReceivePort`');
+    }
+
     final exitRecvPort = ReceivePort();
 
     /// Clean up;
     var _ = exitRecvPort.listen((_) {
+      if (!usesCustomRecvPort) {
+        mainRecvPort.close();
+      } else {
+        onExit!();
+      }
+
       exitRecvPort.close();
-      if (!usesCustomRecvPort) mainRecvPort.close();
     });
 
     /// Create Isolate
@@ -44,7 +69,7 @@ class Process<O, I> {
     );
 
     /// stream setup
-    var dynamicStream = mainRecvPort.asBroadcastStream();
+    var dynamicStream = mainRecvPort.getBroadcastStream();
     _procSendPort = await dynamicStream.first;
 
     stream = dynamicStream.cast<O>();
