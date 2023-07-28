@@ -1,7 +1,13 @@
+/// Parallelism simplified.
+///
 /// ### Usage
 ///
-/// The [Process] class is meant for repeated tasks that could slow down the
-/// main program. Note that the example doesn't reflect that.
+/// The [Process] class is for long drawn (compute or waiting-bound), __*low
+/// repetition*__, CPU-bound tasks. Note that the example doesn't reflect that.
+/// The fact that no-isolate dart also, seems to put load across multiple
+/// processors, means that using a [Process]es or [ProcessGroup]s in anything
+/// other than waiting-bound situations is extremely finicky and should be
+/// decided based of time-based tests.
 ///
 /// ```dart
 /// import 'dart:io';
@@ -61,14 +67,59 @@
 ///
 /// ```
 ///
-/// ### Design Considerations:
+/// The [ProcessGroup] class is for long drawn (compute or waiting-bound),
+/// __*high repetition*__, CPU-bound tasks. Please note that, the moment you
+/// hit a RAM bottleneck, performance drops faster than yak off a cliff. There
+/// is also time loss during setup.
 ///
-/// Setting up long-running [Isolate]s with all of four Send/Receive Ports is a
-/// pain. We get that 'Handshake' done for you. Similarly, the data returned by
-/// the Isolate being typed as dynamic  is also annoying, we go ahead and deal
-/// with that too. We also make a few assumptions regarding the workloads you
-/// offload on these [Process]es (name chosen because its the best analog I
-/// could come up with):
+/// ```dart
+/// import 'package:parallelism/parallelism.dart';
+///
+/// // Over 48 cycles, more the cycles, more the time delta
+/// // 02:18.854134s on 01 threads
+/// // 01:36.916452s on 04 threads
+/// // 05:48.823434s on 08 threads (ram bottleneck)
+///
+/// void main(List<String> args) async {
+///   var sTime = DateTime.now();
+///
+///   var fibProcGroup = ProcessGroup<List<int>, int>(
+///     processLoop: (n) async {
+///       // compute fibonacci sequence up to 50000000
+///       var fibList = <int>[];
+///
+///       var cur = 1;
+///       var lst = 0;
+///       var tmp = 0;
+///
+///       for (var i = 0; i < 50000000; i++) {
+///         fibList.add(cur);
+///
+///         tmp = cur;
+///         cur += lst;
+///         lst = tmp;
+///       }
+///
+///       return fibList;
+///     },
+///     processCount: 4,
+///   );
+///
+///   var stream = await fibProcGroup.start();
+///   var _ = stream.listen((fibList) {
+///     print('Current Delta: ${DateTime.now().difference(sTime)} upto ${fibList.length}');
+///   });
+///
+///   // number of cycles
+///   for (var i = 0; i < 48; i++) {
+///     fibProcGroup.send(i);
+///   }
+///
+///   fibProcGroup.kill();
+/// }
+/// ```
+///
+/// ### Design Considerations:
 ///
 /// 1. They all compute something, or at the very least, send back signals to
 /// the main process, A.K.A they're not `void Function(args)`. This is because

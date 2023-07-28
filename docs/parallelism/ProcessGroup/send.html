@@ -83,7 +83,7 @@
   <pre class="language-dart"><code class="language-dart">void send(I data) {
   _procGroup[_selectedProc].send(data);
 
-  _selectedProc = _selectedProc++ % _activeProcCount;
+  _selectedProc = (_selectedProc + 1) % _activeProcCount;
 }</code></pre>
 </section>
 

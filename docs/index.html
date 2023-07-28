@@ -57,6 +57,11 @@
 comprehensive documentation.)</p>
 <p>While concurrency is comparatively less hairy in dart/flutter, writing code to leverage concurrency
 is still not as simple as it could be. This package aims to change that.</p>
+<h2 id="goals-of-this-project">Goals of this project</h2>
+<p>Setting up long-running [Isolate]s with all of four Send/Receive Ports is a pain. We get that
+'Handshake' done for you. Similarly, the data returned by the Isolate being typed as dynamic is also
+annoying, we go ahead and deal with that too. We also make a few assumptions regarding the workloads
+you offload on these [Process]es (name chosen because its the best analog I could come up with):</p>
 <h2 id="code-conventions">Code Conventions</h2>
 <ul>
 <li>
@@ -85,8 +90,8 @@ fact related to this function
 <p>Use descriptive variable names.</p>
 </li>
 <li>
-<p>Don't ignore return values even if you are not using them, use dummy variables (<code>_</code>, <code>__</code>, basically
-any number of underscores) to handle them</p>
+<p>Don't ignore return values even if you are not using them, use dummy variables (<code>_</code>, <code>__</code>,
+basically any number of underscores) to handle them</p>
 </li>
 <li>
 <p>Keep file sizes small. Break up large 'design chunks' (eg. color) into smaller
@@ -101,6 +106,9 @@ any number of underscores) to handle them</p>
 </ul>
 <h2 id="external-resources">External Resources</h2>
 <ul>
+<li>
+<p><a href="https://martin-robert-fink.medium.com/dart-is-indeed-multi-threaded-94e75f66aa1e">Is Dart multi-threaded?, Martin Fink</a></p>
+</li>
 <li>
 <p><a href="https://dart.dev/language/concurrency#how-isolates-work">How Isolates Work, Dart Developer Documentation</a></p>
 </li>
@@ -121,7 +129,7 @@ any number of underscores) to handle them</p>
   <span class="name"><a href="parallelism/parallelism-library.html">parallelism</a></span> 
 
 </dt>
-<dd>Design Considerations:
+<dd>Parallelism simplified.
 </dd>
 
         </dl>

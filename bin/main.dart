@@ -1,20 +1,23 @@
 import 'package:parallelism/parallelism.dart';
 
-// 01:05.544569s on 16 threads
-// 00:54.202234 on 01 threads
+// Over 48 cycles, more the cycles, more the time delta
+// 02:18.854134s on 01 threads
+// 01:36.916452s on 04 threads
+// 05:48.823434s on 08 threads (ram bottleneck)
 
 void main(List<String> args) async {
   var sTime = DateTime.now();
 
   var fibProcGroup = ProcessGroup<List<int>, int>(
     processLoop: (n) async {
+      // compute fibonacci sequence up to 50000000
       var fibList = <int>[];
 
       var cur = 1;
       var lst = 0;
       var tmp = 0;
-//10000000
-      for (var i = 0; i < 100; i++) {
+
+      for (var i = 0; i < 50000000; i++) {
         fibList.add(cur);
 
         tmp = cur;
@@ -24,6 +27,7 @@ void main(List<String> args) async {
 
       return fibList;
     },
+    processCount: 4,
   );
 
   var stream = await fibProcGroup.start();
@@ -31,7 +35,8 @@ void main(List<String> args) async {
     print('Current Delta: ${DateTime.now().difference(sTime)} upto ${fibList.length}');
   });
 
-  for (var i = 0; i < 100; i++) {
+  // number of cycles
+  for (var i = 0; i < 48; i++) {
     fibProcGroup.send(i);
   }
 

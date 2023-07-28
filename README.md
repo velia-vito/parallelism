@@ -6,6 +6,13 @@ comprehensive documentation.)
 While concurrency is comparatively less hairy in dart/flutter, writing code to leverage concurrency
 is still not as simple as it could be. This package aims to change that.
 
+## Goals of this project
+
+Setting up long-running \[Isolate\]s with all of four Send/Receive Ports is a pain. We get that
+'Handshake' done for you. Similarly, the data returned by the Isolate being typed as dynamic is also
+annoying, we go ahead and deal with that too. We also make a few assumptions regarding the workloads
+you offload on these \[Process\]es (name chosen because its the best analog I could come up with):
+
 ## Code Conventions
 
 - Library level design & developers documentation—an explanation of why things ended up the way they
@@ -32,8 +39,8 @@ is still not as simple as it could be. This package aims to change that.
 
 - Use descriptive variable names.
 
-- Don't ignore return values even if you are not using them, use dummy variables (`_`, `__`, basically
-  any number of underscores) to handle them
+- Don't ignore return values even if you are not using them, use dummy variables (`_`, `__`,
+  basically any number of underscores) to handle them
 
 - Keep file sizes small. Break up large 'design chunks' (eg. color) into smaller
   [mini-libraries](https://dart.dev/guides/libraries/create-packages#organizing-a-package:~:text=Packages%20are%20easiest%20to%20maintain%2C%20extend%2C%20and%20test%20when%20you%20create%20small%2C%20individual%20libraries%2C%20referred%20to%20as%20mini%20libraries)
@@ -44,6 +51,8 @@ is still not as simple as it could be. This package aims to change that.
   [`export/show` directives](https://dart.dev/guides/libraries/create-packages#organizing-a-package:~:text=export%20%27src/cascade.dart%27%20show%20Cascade%3B%0Aexport%20%27src/handler.dart%27%20show%20Handler%3B%0Aexport%20%27src/hijack_exception.dart%27%20show%20HijackException%3B%0Aexport%20%27src/middleware.dart%27%20show%20Middleware%2C%20createMiddleware%3B).
 
 ## External Resources
+
+- [Is Dart multi-threaded?, Martin Fink](https://martin-robert-fink.medium.com/dart-is-indeed-multi-threaded-94e75f66aa1e)
 
 - [How Isolates Work, Dart Developer Documentation](https://dart.dev/language/concurrency#how-isolates-work)
 
