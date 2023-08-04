@@ -204,7 +204,8 @@ would mean the port via which the main isolate obtains information, and
 process.</p>
 </li>
 <li>
-<p>The <em>generics</em> <code>O</code> and <code>I</code> refer to Output and Input types respectively.</p>
+<p>The <em>generics</em> <code>O</code>, <code>P</code>, and <code>I</code> refer to Output, Piece (in case of
+<a href="../parallelism/BufferedProcessPrototypeTest-class.html">BufferedProcessPrototypeTest</a>,) and Input types respectively.</p>
 </li>
 <li>
 <p>There is also the matter of class interfaces with a mix of sync and async
@@ -229,6 +230,15 @@ helps understand what to use, when to use, and why it is used.</p>
       <h2>Classes</h2>
 
       <dl>
+        <dt id="BufferedProcessPrototypeTest">
+  <span class="name "><a href="../parallelism/BufferedProcessPrototypeTest-class.html">BufferedProcessPrototypeTest</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">OP</span>, <span class="type-parameter">IP</span>, <span class="type-parameter">I</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  A process that allows for a single input processed as multiple parts
+Basically a failure
+</dd>
+
         <dt id="Process">
   <span class="name "><a href="../parallelism/Process-class.html">Process</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span></span> 
 
@@ -298,6 +308,7 @@ helps understand what to use, when to use, and why it is used.</p>
     <h5>parallelism library</h5>
     <ol>
       <li class="section-title"><a href="../parallelism/parallelism-library.html#classes">Classes</a></li>
+        <li><a href="../parallelism/BufferedProcessPrototypeTest-class.html">BufferedProcessPrototypeTest</a></li>
         <li><a href="../parallelism/Process-class.html">Process</a></li>
         <li><a href="../parallelism/ProcessGroup-class.html">ProcessGroup</a></li>
 

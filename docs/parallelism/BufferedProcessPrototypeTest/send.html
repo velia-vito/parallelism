@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the ProcessGroup constructor from Class ProcessGroup from the parallelism library, for the Dart programming language.">
-  <title>ProcessGroup constructor - ProcessGroup - parallelism library - Dart API</title>
+  <meta name="description" content="API docs for the send method from the BufferedProcessPrototypeTest class, for the Dart programming language.">
+  <title>send method - BufferedProcessPrototypeTest class - parallelism library - Dart API</title>
 
 
   
@@ -30,10 +30,10 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../../index.html">parallelism</a></li>
     <li><a href="../../parallelism/parallelism-library.html">parallelism</a></li>
-    <li><a href="../../parallelism/ProcessGroup-class.html">ProcessGroup<span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span></a></li>
-    <li class="self-crumb">ProcessGroup constructor</li>
+    <li><a href="../../parallelism/BufferedProcessPrototypeTest-class.html">BufferedProcessPrototypeTest<span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">OP</span>, <span class="type-parameter">IP</span>, <span class="type-parameter">I</span>&gt;</span></a></li>
+    <li class="self-crumb">send method</li>
   </ol>
-  <div class="self-name">ProcessGroup</div>
+  <div class="self-name">send</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -53,35 +53,25 @@
 
   <div id="dartdoc-main-content" class="main-content">
       <div>
-<h1><span class="kind-constructor">ProcessGroup&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span> constructor 
+<h1><span class="kind-method">send</span> method 
 </h1></div>
 
     <section class="multi-line-signature">
       
-      <span class="name ">ProcessGroup&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="-param-processLoop">{<span>required</span> <span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span> <span class="parameter-name">processLoop</span>(<ol class="parameter-list"><li><span class="parameter" id="param-"><span class="type-annotation">I</span></span></li>
-</ol>
-), </span></li>
-<li><span class="parameter" id="-param-processCount"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">processCount</span>}</span></li>
-</ol>)
-    </section>
 
+<span class="returntype"><a href="https://api.dart.dev/stable/3.0.6/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+<span class="name ">send</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="send-param-data"><span class="type-annotation">I</span> <span class="parameter-name">data</span></span></li>
+</ol>)
+
+      
+
+    </section>
     
 <section class="desc markdown">
-  <p>Create a <code>ProcessGroup</code></p>
-<h3 id="args">Args</h3>
+  <p>Send data to the <code>Process</code></p>
+<p>Note:</p>
 <ul>
-<li><code>processLoop</code>: the function that is used to process data sent to the
-<code>ProcessGroup</code></li>
-</ul>
-<h3 id="notes">Notes</h3>
-<ul>
-<li>
-<p>This is primarily for when you have high volume work, note that all
-outputs are streamed together.</p>
-</li>
-<li>
-<p><code>processCount</code> defaults to the number of processors your device has.</p>
-</li>
+<li>Sending <code>null</code> is the equivalent of calling <a href="../../parallelism/BufferedProcessPrototypeTest/kill.html">kill</a></li>
 </ul>
 </section>
 
@@ -89,16 +79,23 @@ outputs are streamed together.</p>
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">&#47;&#47;TODO: Add a input load weighage function, and load-break-off limit (completes #2)
-ProcessGroup({
-  required Future&lt;O&gt; Function(I) processLoop,
-  int? processCount,
-}) {
-  _activeProcCount = processCount ?? Platform.numberOfProcessors;
+  <pre class="language-dart"><code class="language-dart">Future&lt;void&gt; send(I data) async {
+  _pCountTemp = 0;
 
-  for (var i = 0; i &lt; _activeProcCount; i++) {
-    _procGroup.add(Process&lt;O, I&gt;(processLoop: processLoop));
+  await for (var iPiece in await _inputSplitter(data)) {
+    _procSendPort.send({
+      &#39;iCount&#39;: _iCount,
+      &#39;pCount&#39;: _pCountTemp++,
+      &#39;piece&#39;: iPiece,
+    });
+
+    &#47;&#47; store number of parts generated for cross-verification before rebuilding
+    _pCount[_iCount] = _pCountTemp;
   }
+  ;
+
+  &#47;&#47; increment inputCount for the next call to send
+  _iCount++;
 }</code></pre>
 </section>
 
@@ -115,34 +112,34 @@ ProcessGroup({
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
   <li><a href="../../index.html">parallelism</a></li>
   <li><a href="../../parallelism/parallelism-library.html">parallelism</a></li>
-  <li><a href="../../parallelism/ProcessGroup-class.html">ProcessGroup<span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span></a></li>
-  <li class="self-crumb">ProcessGroup constructor</li>
+  <li><a href="../../parallelism/BufferedProcessPrototypeTest-class.html">BufferedProcessPrototypeTest<span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">OP</span>, <span class="type-parameter">IP</span>, <span class="type-parameter">I</span>&gt;</span></a></li>
+  <li class="self-crumb">send method</li>
 </ol>
 
 
-    <h5>ProcessGroup class</h5>
+    <h5>BufferedProcessPrototypeTest class</h5>
     <ol>
 
-        <li class="section-title"><a href="../../parallelism/ProcessGroup-class.html#constructors">Constructors</a></li>
-          <li><a href="../../parallelism/ProcessGroup/ProcessGroup.html">ProcessGroup</a></li>
+        <li class="section-title"><a href="../../parallelism/BufferedProcessPrototypeTest-class.html#constructors">Constructors</a></li>
+          <li><a href="../../parallelism/BufferedProcessPrototypeTest/BufferedProcessPrototypeTest.html">BufferedProcessPrototypeTest</a></li>
 
 
         <li class="section-title">
-          <a href="../../parallelism/ProcessGroup-class.html#instance-properties">Properties</a>
+          <a href="../../parallelism/BufferedProcessPrototypeTest-class.html#instance-properties">Properties</a>
         </li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/hashCode.html">hashCode</a></li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/runtimeType.html">runtimeType</a></li>
-          <li><a href="../../parallelism/ProcessGroup/stream.html">stream</a></li>
+          <li><a href="../../parallelism/BufferedProcessPrototypeTest/stream.html">stream</a></li>
 
-        <li class="section-title"><a href="../../parallelism/ProcessGroup-class.html#instance-methods">Methods</a></li>
-          <li><a href="../../parallelism/ProcessGroup/forceKill.html">forceKill</a></li>
-          <li><a href="../../parallelism/ProcessGroup/kill.html">kill</a></li>
+        <li class="section-title"><a href="../../parallelism/BufferedProcessPrototypeTest-class.html#instance-methods">Methods</a></li>
+          <li><a href="../../parallelism/BufferedProcessPrototypeTest/forceKill.html">forceKill</a></li>
+          <li><a href="../../parallelism/BufferedProcessPrototypeTest/kill.html">kill</a></li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
-          <li><a href="../../parallelism/ProcessGroup/send.html">send</a></li>
-          <li><a href="../../parallelism/ProcessGroup/start.html">start</a></li>
+          <li><a href="../../parallelism/BufferedProcessPrototypeTest/send.html">send</a></li>
+          <li><a href="../../parallelism/BufferedProcessPrototypeTest/start.html">start</a></li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/toString.html">toString</a></li>
 
-        <li class="section-title inherited"><a href="../../parallelism/ProcessGroup-class.html#operators">Operators</a></li>
+        <li class="section-title inherited"><a href="../../parallelism/BufferedProcessPrototypeTest-class.html#operators">Operators</a></li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/operator_equals.html">operator ==</a></li>
 
 
@@ -150,7 +147,7 @@ ProcessGroup({
 
 </ol>
 
-  </div><!--/.sidebar-offcanvas-left-->
+  </div><!--/.sidebar-offcanvas-->
 
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
   </div><!--/.sidebar-offcanvas-->

@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the start method from the Process class, for the Dart programming language.">
-  <title>start method - Process class - parallelism library - Dart API</title>
+  <meta name="description" content="API docs for the start method from the BufferedProcessPrototypeTest class, for the Dart programming language.">
+  <title>start method - BufferedProcessPrototypeTest class - parallelism library - Dart API</title>
 
 
   
@@ -30,7 +30,7 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../../index.html">parallelism</a></li>
     <li><a href="../../parallelism/parallelism-library.html">parallelism</a></li>
-    <li><a href="../../parallelism/Process-class.html">Process<span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span></a></li>
+    <li><a href="../../parallelism/BufferedProcessPrototypeTest-class.html">BufferedProcessPrototypeTest<span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">OP</span>, <span class="type-parameter">IP</span>, <span class="type-parameter">I</span>&gt;</span></a></li>
     <li class="self-crumb">start method</li>
   </ol>
   <div class="self-name">start</div>
@@ -127,9 +127,27 @@ will not exit.</p>
   var dynamicStream = mainRecvPort.getBroadcastStream();
   _procSendPort = await dynamicStream.first;
 
-  &#47;&#47; TODO: yield a custom stream instead of cast, that way you can send both
-  &#47;&#47; TODO: a data tag, along side the output (?)
-  stream = dynamicStream.cast&lt;O&gt;();
+  &#47;&#47; TODO: Rebuild output from pieces here
+  var __ = dynamicStream.listen((oPiece) {
+    oPiece = oPiece as Map;
+
+    var iCount = oPiece[&#39;iCount&#39;] as int;
+    var pCount = oPiece[&#39;pCount&#39;] as int;
+    var piece = oPiece[&#39;piece&#39;] as OP;
+
+    if (!_buffer.containsKey(iCount)) {
+      _buffer[iCount] = [MapEntry(pCount, piece)];
+    } else {
+      _buffer[iCount]!.add(MapEntry(pCount, piece));
+
+      if (_buffer[iCount]!.length == _pCount[iCount]) {
+        _internalStream.add(_rebuilder(_buffer[iCount]!));
+
+        var ___ = _buffer.remove(iCount);
+        var ____ = _pCount.remove(iCount);
+      }
+    }
+  });
 
   return stream;
 }</code></pre>
@@ -148,34 +166,34 @@ will not exit.</p>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
   <li><a href="../../index.html">parallelism</a></li>
   <li><a href="../../parallelism/parallelism-library.html">parallelism</a></li>
-  <li><a href="../../parallelism/Process-class.html">Process<span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span></a></li>
+  <li><a href="../../parallelism/BufferedProcessPrototypeTest-class.html">BufferedProcessPrototypeTest<span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">OP</span>, <span class="type-parameter">IP</span>, <span class="type-parameter">I</span>&gt;</span></a></li>
   <li class="self-crumb">start method</li>
 </ol>
 
 
-    <h5>Process class</h5>
+    <h5>BufferedProcessPrototypeTest class</h5>
     <ol>
 
-        <li class="section-title"><a href="../../parallelism/Process-class.html#constructors">Constructors</a></li>
-          <li><a href="../../parallelism/Process/Process.html">Process</a></li>
+        <li class="section-title"><a href="../../parallelism/BufferedProcessPrototypeTest-class.html#constructors">Constructors</a></li>
+          <li><a href="../../parallelism/BufferedProcessPrototypeTest/BufferedProcessPrototypeTest.html">BufferedProcessPrototypeTest</a></li>
 
 
         <li class="section-title">
-          <a href="../../parallelism/Process-class.html#instance-properties">Properties</a>
+          <a href="../../parallelism/BufferedProcessPrototypeTest-class.html#instance-properties">Properties</a>
         </li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/hashCode.html">hashCode</a></li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/runtimeType.html">runtimeType</a></li>
-          <li><a href="../../parallelism/Process/stream.html">stream</a></li>
+          <li><a href="../../parallelism/BufferedProcessPrototypeTest/stream.html">stream</a></li>
 
-        <li class="section-title"><a href="../../parallelism/Process-class.html#instance-methods">Methods</a></li>
-          <li><a href="../../parallelism/Process/forceKill.html">forceKill</a></li>
-          <li><a href="../../parallelism/Process/kill.html">kill</a></li>
+        <li class="section-title"><a href="../../parallelism/BufferedProcessPrototypeTest-class.html#instance-methods">Methods</a></li>
+          <li><a href="../../parallelism/BufferedProcessPrototypeTest/forceKill.html">forceKill</a></li>
+          <li><a href="../../parallelism/BufferedProcessPrototypeTest/kill.html">kill</a></li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
-          <li><a href="../../parallelism/Process/send.html">send</a></li>
-          <li><a href="../../parallelism/Process/start.html">start</a></li>
+          <li><a href="../../parallelism/BufferedProcessPrototypeTest/send.html">send</a></li>
+          <li><a href="../../parallelism/BufferedProcessPrototypeTest/start.html">start</a></li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/toString.html">toString</a></li>
 
-        <li class="section-title inherited"><a href="../../parallelism/Process-class.html#operators">Operators</a></li>
+        <li class="section-title inherited"><a href="../../parallelism/BufferedProcessPrototypeTest-class.html#operators">Operators</a></li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/operator_equals.html">operator ==</a></li>
 
 

@@ -1,17 +1,33 @@
 part of '../parallelism.dart';
 
-/// A container within which to run a processLoop
-class Process<O, I> {
-  /// [Stream] with processed outputs
-  late final Stream<O> stream;
+/// A process that allows for a single input processed as multiple parts
+/// Basically a failure
+class BufferedProcessPrototypeTest<O, OP, IP, I> {
+  final _internalStream = StreamController<O>.broadcast();
+
+  /// Which-eth input this is
+  var _iCount = 0;
+
+  var _pCountTemp = 0;
+
+  /// Buffer for processed parts
+  var _buffer = SplayTreeMap<int, List<MapEntry<int, OP>>>();
+
+  var _pCount = <int, int>{};
 
   /// The [Isolate] running the `Process`
   late final Isolate _isolate;
 
   /// the function that is used to process data sent to the `Process`
-  late final Future<O> Function(
-    I,
-  ) _processLoop;
+  late final Future<OP> Function(IP) _processLoop;
+
+  /// the function that is used to split the input into pieces
+  late final Stream<IP> Function(I) _inputSplitter;
+
+  late final O Function(List<MapEntry<int, OP>>) _rebuilder;
+
+  /// [Stream] with processed outputs
+  Stream<O> get stream => _internalStream.stream;
 
   /// [SendPort] to send data to the `Process`
   late final SendPort _procSendPort;
@@ -21,9 +37,13 @@ class Process<O, I> {
   /// ### Args:
   /// - `processLoop`: the function that is used to process data sent to the
   /// `Process`
-  Process({
-    required Future<O> Function(I) processLoop,
-  }) : _processLoop = processLoop;
+  BufferedProcessPrototypeTest({
+    required Future<OP> Function(IP) processLoop,
+    required Stream<IP> Function(I) inputSplitter,
+    required O Function(List<MapEntry<int, OP>>) rebuilder,
+  })  : _processLoop = processLoop,
+        _inputSplitter = inputSplitter,
+        _rebuilder = rebuilder;
 
   /// Start up the `Process`. Call this before sending any data to the `Process`
   ///
@@ -72,7 +92,27 @@ class Process<O, I> {
     var dynamicStream = mainRecvPort.getBroadcastStream();
     _procSendPort = await dynamicStream.first;
 
-    stream = dynamicStream.cast<O>();
+    // TODO: Rebuild output from pieces here
+    var __ = dynamicStream.listen((oPiece) {
+      oPiece = oPiece as Map;
+
+      var iCount = oPiece['iCount'] as int;
+      var pCount = oPiece['pCount'] as int;
+      var piece = oPiece['piece'] as OP;
+
+      if (!_buffer.containsKey(iCount)) {
+        _buffer[iCount] = [MapEntry(pCount, piece)];
+      } else {
+        _buffer[iCount]!.add(MapEntry(pCount, piece));
+
+        if (_buffer[iCount]!.length == _pCount[iCount]) {
+          _internalStream.add(_rebuilder(_buffer[iCount]!));
+
+          var ___ = _buffer.remove(iCount);
+          var ____ = _pCount.remove(iCount);
+        }
+      }
+    });
 
     return stream;
   }
@@ -81,8 +121,23 @@ class Process<O, I> {
   ///
   /// Note:
   /// - Sending `null` is the equivalent of calling [kill]
-  void send(I data) {
-    _procSendPort.send(data);
+  Future<void> send(I data) async {
+    _pCountTemp = 0;
+
+    await for (var iPiece in await _inputSplitter(data)) {
+      _procSendPort.send({
+        'iCount': _iCount,
+        'pCount': _pCountTemp++,
+        'piece': iPiece,
+      });
+
+      // store number of parts generated for cross-verification before rebuilding
+      _pCount[_iCount] = _pCountTemp;
+    }
+    ;
+
+    // increment inputCount for the next call to send
+    _iCount++;
   }
 
   /// Kill the `Process` after all current inputs are processed
@@ -103,13 +158,17 @@ class Process<O, I> {
 
     // run the processing loop till null is sent
     await for (final data in procRecvPort) {
-      if (data is I) {
-        mainSendPort.send(await _processLoop(data));
+      if (data is Map && data['piece'] is IP) {
+        mainSendPort.send({
+          'iCount': data['iCount'] as int,
+          'pCOunt': data['pCount'] as int,
+          'piece': await _processLoop(data['piece'] as IP),
+        });
       } else if (data == null) {
         break;
       } else {
         throw Exception(
-          'Isolate eventLoop not designed to handle inputs of type $I',
+          'Isolate eventLoop not designed to handle inputs of type ${data.runtimeType}',
         );
       }
     }

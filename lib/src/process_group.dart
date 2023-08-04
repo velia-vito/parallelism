@@ -22,6 +22,8 @@ class ProcessGroup<O, I> {
   /// outputs are streamed together.
   ///
   /// - `processCount` defaults to the number of processors your device has.
+
+  //TODO: Add a input load weighage function, and load-break-off limit (completes #2)
   ProcessGroup({
     required Future<O> Function(I) processLoop,
     int? processCount,

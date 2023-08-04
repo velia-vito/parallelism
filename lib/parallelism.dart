@@ -147,7 +147,8 @@
 /// `procSendPort` would be the port via which to send information to the
 /// process.
 ///
-/// - The *generics* `O` and `I` refer to Output and Input types respectively.
+/// - The *generics* `O`, `P`, and `I` refer to Output, Piece (in case of
+/// [BufferedProcessPrototypeTest],) and Input types respectively.
 ///
 /// - There is also the matter of class interfaces with a mix of sync and async
 /// methods. Instead of maintaining uniformity, we defer to
@@ -163,9 +164,13 @@ library;
 
 // Dart imports:
 import 'dart:async';
-import 'dart:isolate';
+import 'dart:collection';
 import 'dart:io';
+import 'dart:isolate';
 
-part 'process/receive_port_mod.dart';
-part 'process/process.dart';
-part 'process/process_group.dart';
+part 'src/receive_port_mod.dart';
+
+part 'src/process.dart';
+part 'src/process_group.dart';
+
+part 'src/buffered_process.dart';
