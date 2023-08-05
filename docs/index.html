@@ -57,11 +57,18 @@
 comprehensive documentation.)</p>
 <p>While concurrency is comparatively less hairy in dart/flutter, writing code to leverage concurrency
 is still not as simple as it could be. This package aims to change that.</p>
-<h2 id="goals-of-this-project">Goals of this project</h2>
-<p>Setting up long-running [Isolate]s with all of four Send/Receive Ports is a pain. We get that
-'Handshake' done for you. Similarly, the data returned by the Isolate being typed as dynamic is also
-annoying, we go ahead and deal with that too. We also make a few assumptions regarding the workloads
-you offload on these [Process]es (name chosen because its the best analog I could come up with):</p>
+<h2 id="primary-features">Primary Features</h2>
+<ol>
+<li>
+<p>Setting up long-running <code>Isolate</code>s with all of four Send/Receive Ports is a pain. We get that
+'Handshake' done for you.</p>
+</li>
+<li>
+<p>Similarly, the data returned by the Isolate being typed as dynamic is also annoying, we go ahead
+and deal with that too. So, now you don't have to deal with finicky type-casting inputs across
+your background tasks.</p>
+</li>
+</ol>
 <h2 id="code-conventions">Code Conventions</h2>
 <ul>
 <li>
