@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the ProcessGroup class from the parallelism library, for the Dart programming language.">
-  <title>ProcessGroup class - parallelism library - Dart API</title>
+  <meta name="description" content="API docs for the ProcessingLine class from the parallelism library, for the Dart programming language.">
+  <title>ProcessingLine class - parallelism library - Dart API</title>
 
 
   
@@ -30,9 +30,9 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../index.html">parallelism</a></li>
     <li><a href="../parallelism/parallelism-library.html">parallelism</a></li>
-    <li class="self-crumb">ProcessGroup<span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span> class</li>
+    <li class="self-crumb">ProcessingLine<span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span> class</li>
   </ol>
-  <div class="self-name">ProcessGroup</div>
+  <div class="self-name">ProcessingLine</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -52,14 +52,11 @@
 
   <div id="dartdoc-main-content" class="main-content">
       <div>
-<h1><span class="kind-class">ProcessGroup&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span> class 
+<h1><span class="kind-class">ProcessingLine&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span> class 
  
 </h1></div>
 
     
-<section class="desc markdown">
-  <p>Create a bunch of <a href="../parallelism/Process-class.html">Process</a>es that run the same <code>processLoop</code>.</p>
-</section>
 
 
     <section>
@@ -88,11 +85,11 @@
     <h2>Constructors</h2>
 
     <dl class="constructor-summary-list">
-        <dt id="ProcessGroup" class="callable">
-          <span class="name"><a href="../parallelism/ProcessGroup/ProcessGroup.html">ProcessGroup</a></span><span class="signature">(<span class="parameter" id="-param-processLoop">{<span>required</span> <span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span> <span class="parameter-name">processLoop</span>(<span class="parameter" id="param-"><span class="type-annotation">I</span></span>), </span><span class="parameter" id="-param-processCount"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">processCount</span>}</span>)</span>
+        <dt id="ProcessingLine" class="callable">
+          <span class="name"><a href="../parallelism/ProcessingLine/ProcessingLine.html">ProcessingLine</a></span><span class="signature">()</span>
         </dt>
         <dd>
-          Create a <code>ProcessGroup</code>
+          
         </dd>
     </dl>
   </section>
@@ -124,12 +121,12 @@
 </dd>
 
         <dt id="stream" class="property">
-  <span class="name"><a href="../parallelism/ProcessGroup/stream.html">stream</a></span>
+  <span class="name"><a href="../parallelism/ProcessingLine/stream.html">stream</a></span>
   <span class="signature">&#8596; <a href="https://api.dart.dev/stable/3.0.6/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span> 
 
 </dt>
 <dd>
-  <a href="https://api.dart.dev/stable/3.0.6/dart-async/Stream-class.html">Stream</a> with processed outputs
+  A <a href="https://api.dart.dev/stable/3.0.6/dart-async/Stream-class.html">Stream</a> with processed outputs
   <div class="features"><span class="feature">late</span><span class="feature">final</span><span class="feature">override-getter</span></div>
 
 </dd>
@@ -143,28 +140,106 @@
       id="instance-methods">
     <h2>Methods</h2>
     <dl class="callables">
-        <dt id="forceKill" class="callable">
-  <span class="name"><a href="../parallelism/ProcessGroup/forceKill.html">forceKill</a></span><span class="signature">(<wbr>)
+        <dt id="addFinalProcess" class="callable">
+  <span class="name"><a href="../parallelism/ProcessingLine/addFinalProcess.html">addFinalProcess</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="addFinalProcess-param-processLoop"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span> <span class="parameter-name">processLoop</span>(<span class="parameter" id="param-"><span class="type-annotation">T</span></span>)</span>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
 <dd>
-  Kill the <code>ProcessGroup</code> right NOW irrespective or unprocessed inputs
+  
+  
+
+</dd>
+
+        <dt id="addFinalProcessGroup" class="callable">
+  <span class="name"><a href="../parallelism/ProcessingLine/addFinalProcessGroup.html">addFinalProcessGroup</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="addFinalProcessGroup-param-processLoop"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span> <span class="parameter-name">processLoop</span>(<span class="parameter" id="param-"><span class="type-annotation">T</span></span>), </span><span class="parameter" id="addFinalProcessGroup-param-processCount"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">processCount</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="addFirstProcess" class="callable">
+  <span class="name"><a href="../parallelism/ProcessingLine/addFirstProcess.html">addFirstProcess</a></span><span class="signature">(<wbr><span class="parameter" id="addFirstProcess-param-processLoop"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-async/Future-class.html">Future</a></span> <span class="parameter-name">processLoop</span>(<span class="parameter" id="param-"><span class="type-annotation">I</span></span>)</span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="addFirstProcessGroup" class="callable">
+  <span class="name"><a href="../parallelism/ProcessingLine/addFirstProcessGroup.html">addFirstProcessGroup</a></span><span class="signature">(<wbr><span class="parameter" id="addFirstProcessGroup-param-processLoop"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-async/Future-class.html">Future</a></span> <span class="parameter-name">processLoop</span>(<span class="parameter" id="param-"><span class="type-annotation">I</span></span>), </span><span class="parameter" id="addFirstProcessGroup-param-processCount"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">processCount</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="addIntermediateProcess" class="callable">
+  <span class="name"><a href="../parallelism/ProcessingLine/addIntermediateProcess.html">addIntermediateProcess</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="addIntermediateProcess-param-processLoop"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-async/Future-class.html">Future</a></span> <span class="parameter-name">processLoop</span>(<span class="parameter" id="param-"><span class="type-annotation">T</span></span>)</span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="addIntermediateProcessGroup" class="callable">
+  <span class="name"><a href="../parallelism/ProcessingLine/addIntermediateProcessGroup.html">addIntermediateProcessGroup</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="addIntermediateProcessGroup-param-processLoop"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-async/Future-class.html">Future</a></span> <span class="parameter-name">processLoop</span>(<span class="parameter" id="param-"><span class="type-annotation">T</span></span>), </span><span class="parameter" id="addIntermediateProcessGroup-param-processCount"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.0.6/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">processCount</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  
+  
+
+</dd>
+
+        <dt id="forceKill" class="callable">
+  <span class="name"><a href="../parallelism/ProcessingLine/forceKill.html">forceKill</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Kill the relevant <a href="https://api.dart.dev/stable/3.0.6/dart-isolate/Isolate-class.html">Isolate</a>s IMMEDIATELY irrespective of pending inputs
   <div class="features"><span class="feature">override</span></div>
 
 </dd>
 
         <dt id="kill" class="callable">
-  <span class="name"><a href="../parallelism/ProcessGroup/kill.html">kill</a></span><span class="signature">(<wbr>)
+  <span class="name"><a href="../parallelism/ProcessingLine/kill.html">kill</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
 <dd>
-  Kill the <code>ProcessGroup</code> after all current inputs are processed
+  Kill the relevant <a href="https://api.dart.dev/stable/3.0.6/dart-isolate/Isolate-class.html">Isolate</a>s after processing all current inputs
   <div class="features"><span class="feature">override</span></div>
 
 </dd>
@@ -183,28 +258,27 @@
 </dd>
 
         <dt id="send" class="callable">
-  <span class="name"><a href="../parallelism/ProcessGroup/send.html">send</a></span><span class="signature">(<wbr><span class="parameter" id="send-param-data"><span class="type-annotation">I</span> <span class="parameter-name">data</span></span>)
+  <span class="name"><a href="../parallelism/ProcessingLine/send.html">send</a></span><span class="signature">(<wbr><span class="parameter" id="send-param-data"><span class="type-annotation">I</span> <span class="parameter-name">data</span></span>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
 <dd>
-  Send data to the Process
+  Send data for processing;
   <div class="features"><span class="feature">override</span></div>
 
 </dd>
 
         <dt id="start" class="callable">
-  <span class="name"><a href="../parallelism/ProcessGroup/start.html">start</a></span><span class="signature">(<wbr>)
+  <span class="name"><a href="../parallelism/ProcessingLine/start.html">start</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.0.6/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.0.6/dart-async/Stream-class.html">Stream</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span>&gt;</span></span>
   </span>
   
 
 </dt>
 <dd>
-  Start up the <code>ProcessGroup</code>. Call this before sending any data to the
-<code>ProcessGroup</code>
+  Start the required <a href="https://api.dart.dev/stable/3.0.6/dart-isolate/Isolate-class.html">Isolate</a>s and perform a "hand-shake"
   <div class="features"><span class="feature">override</span></div>
 
 </dd>
@@ -262,7 +336,7 @@
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
   <li><a href="../index.html">parallelism</a></li>
   <li><a href="../parallelism/parallelism-library.html">parallelism</a></li>
-  <li class="self-crumb">ProcessGroup<span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span> class</li>
+  <li class="self-crumb">ProcessingLine<span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span> class</li>
 </ol>
 
 
@@ -290,26 +364,32 @@
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
     <ol>
 
-        <li class="section-title"><a href="../parallelism/ProcessGroup-class.html#constructors">Constructors</a></li>
-          <li><a href="../parallelism/ProcessGroup/ProcessGroup.html">ProcessGroup</a></li>
+        <li class="section-title"><a href="../parallelism/ProcessingLine-class.html#constructors">Constructors</a></li>
+          <li><a href="../parallelism/ProcessingLine/ProcessingLine.html">ProcessingLine</a></li>
 
 
         <li class="section-title">
-          <a href="../parallelism/ProcessGroup-class.html#instance-properties">Properties</a>
+          <a href="../parallelism/ProcessingLine-class.html#instance-properties">Properties</a>
         </li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/hashCode.html">hashCode</a></li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/runtimeType.html">runtimeType</a></li>
-          <li><a href="../parallelism/ProcessGroup/stream.html">stream</a></li>
+          <li><a href="../parallelism/ProcessingLine/stream.html">stream</a></li>
 
-        <li class="section-title"><a href="../parallelism/ProcessGroup-class.html#instance-methods">Methods</a></li>
-          <li><a href="../parallelism/ProcessGroup/forceKill.html">forceKill</a></li>
-          <li><a href="../parallelism/ProcessGroup/kill.html">kill</a></li>
+        <li class="section-title"><a href="../parallelism/ProcessingLine-class.html#instance-methods">Methods</a></li>
+          <li><a href="../parallelism/ProcessingLine/addFinalProcess.html">addFinalProcess</a></li>
+          <li><a href="../parallelism/ProcessingLine/addFinalProcessGroup.html">addFinalProcessGroup</a></li>
+          <li><a href="../parallelism/ProcessingLine/addFirstProcess.html">addFirstProcess</a></li>
+          <li><a href="../parallelism/ProcessingLine/addFirstProcessGroup.html">addFirstProcessGroup</a></li>
+          <li><a href="../parallelism/ProcessingLine/addIntermediateProcess.html">addIntermediateProcess</a></li>
+          <li><a href="../parallelism/ProcessingLine/addIntermediateProcessGroup.html">addIntermediateProcessGroup</a></li>
+          <li><a href="../parallelism/ProcessingLine/forceKill.html">forceKill</a></li>
+          <li><a href="../parallelism/ProcessingLine/kill.html">kill</a></li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
-          <li><a href="../parallelism/ProcessGroup/send.html">send</a></li>
-          <li><a href="../parallelism/ProcessGroup/start.html">start</a></li>
+          <li><a href="../parallelism/ProcessingLine/send.html">send</a></li>
+          <li><a href="../parallelism/ProcessingLine/start.html">start</a></li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/toString.html">toString</a></li>
 
-        <li class="section-title inherited"><a href="../parallelism/ProcessGroup-class.html#operators">Operators</a></li>
+        <li class="section-title inherited"><a href="../parallelism/ProcessingLine-class.html#operators">Operators</a></li>
           <li class="inherited"><a href="https://api.dart.dev/stable/3.0.6/dart-core/Object/operator_equals.html">operator ==</a></li>
 
 

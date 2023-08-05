@@ -17,22 +17,9 @@
 ///   // top directory for test
 ///   final topDir = Directory(r'A:\\Code');
 ///
-///   // find sub-directories that contain files and can be accessed without a Permission errors
-///   final firstSubDir = (await topDir.list().toList()).whereType<Directory>().firstWhere((element) {
-///     try {
-///       return element.listSync().whereType<File>().length > 10;
-///     } catch (e) {
-///       return false;
-///     }
-///   });
-///
-///   final lastSubDir = (await topDir.list().toList()).whereType<Directory>().lastWhere((element) {
-///     try {
-///       return element.listSync().whereType<File>().length > 10;
-///     } catch (e) {
-///       return false;
-///     }
-///   });
+///   // ===============
+///   // === Process ===
+///   // ===============
 ///
 ///   // setup up a process to list and return all file paths in the given directory
 ///   var process = Process<List<String>, Directory>(
@@ -50,15 +37,37 @@
 ///     }
 ///   });
 ///
-///   // send a directory to the process
+///   // find sub-directories that contain files and can be accessed without a Permission errors
+///   final firstSubDir = (await topDir.list().toList()).whereType<Directory>().firstWhere((element) {
+///     try {
+///       return element.listSync().whereType<File>().length > 10;
+///     } catch (e) {
+///       return false;
+///     }
+///   });
+///
+///   // send the directory to the process
 ///   process.send(firstSubDir);
 ///
 ///   // NOTE: `kill` will end the process after all current inputs are processed,
 ///   // a.k.a no new inputs are accepted. use `forceKill` to end it instantly
 ///   process.kill();
 ///
-///   // Do the same path listing here, so you can clearly differentiate which is
-///   // done in the process and what is done in the main program
+///   // ====================
+///   // === Main Program ===
+///   // ====================
+///
+///   // Do the same path listing here, but for a different directory, so you
+///   // can clearly differentiate which is done in the process and what is done
+///   // in the main program
+///   final lastSubDir = (await topDir.list().toList()).whereType<Directory>().lastWhere((element) {
+///     try {
+///       return element.listSync().whereType<File>().length > 10;
+///     } catch (e) {
+///       return false;
+///     }
+///   });
+///
 ///   for (var filePath
 ///       in (await lastSubDir.list().toList()).whereType<File>().map((e) => e.path).toList()) {
 ///     print('main: $filePath');
@@ -75,17 +84,18 @@
 /// ```dart
 /// import 'package:parallelism/parallelism.dart';
 ///
-/// // Over 48 cycles, more the cycles, more the time delta
-/// // 02:18.854134s on 01 threads
-/// // 01:36.916452s on 04 threads
-/// // 05:48.823434s on 08 threads (ram bottleneck)
+/// // Test Results over 48 cycles, more the cycles, more the time delta
+/// // - 02:18.854134s on 01 threads
+/// // - 01:36.916452s on 04 threads
+/// // - 05:48.823434s on 08 threads (ram bottleneck)
 ///
 /// void main(List<String> args) async {
+///   // start time
 ///   var sTime = DateTime.now();
 ///
+///   // compute fibonacci sequence up to n = 50000000
 ///   var fibProcGroup = ProcessGroup<List<int>, int>(
 ///     processLoop: (n) async {
-///       // compute fibonacci sequence up to 50000000
 ///       var fibList = <int>[];
 ///
 ///       var cur = 1;
@@ -105,12 +115,14 @@
 ///     processCount: 4,
 ///   );
 ///
+///   // start the `ProcessGroup`, print time-delta from program start time for
+///   // each return from the `ProcessGroup`
 ///   var stream = await fibProcGroup.start();
 ///   var _ = stream.listen((fibList) {
-///     print('Current Delta: ${DateTime.now().difference(sTime)} upto ${fibList.length}');
+///     print('Current Delta: ${DateTime.now().difference(sTime)} up to ${fibList.length}');
 ///   });
 ///
-///   // number of cycles
+///   // run the same memory-heavy fibonacci computation 48 times
 ///   for (var i = 0; i < 48; i++) {
 ///     fibProcGroup.send(i);
 ///   }
@@ -147,8 +159,7 @@
 /// `procSendPort` would be the port via which to send information to the
 /// process.
 ///
-/// - The *generics* `O`, `P`, and `I` refer to Output, Piece (in case of
-/// [BufferedProcessPrototypeTest],) and Input types respectively.
+/// - The *generics* `O` and `I` refer to Output and Input types respectively.
 ///
 /// - There is also the matter of class interfaces with a mix of sync and async
 /// methods. Instead of maintaining uniformity, we defer to
@@ -164,13 +175,14 @@ library;
 
 // Dart imports:
 import 'dart:async';
-import 'dart:collection';
 import 'dart:io';
 import 'dart:isolate';
 
+// Support/Meta/Internal Parts:
+part 'src/parallelization_interface.dart';
 part 'src/receive_port_mod.dart';
 
+// Exposed Parts:
 part 'src/process.dart';
 part 'src/process_group.dart';
-
-part 'src/buffered_process.dart';
+part 'src/processing_line.dart';

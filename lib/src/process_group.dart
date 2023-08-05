@@ -1,7 +1,7 @@
 part of '../parallelism.dart';
 
 /// Create a bunch of [Process]es that run the same `processLoop`.
-class ProcessGroup<O, I> {
+class ProcessGroup<O, I> implements ParallelizationInterface<O, I> {
   /// [Stream] with processed outputs
   late final Stream<O> stream;
 
@@ -23,7 +23,6 @@ class ProcessGroup<O, I> {
   ///
   /// - `processCount` defaults to the number of processors your device has.
 
-  //TODO: Add a input load weighage function, and load-break-off limit (completes #2)
   ProcessGroup({
     required Future<O> Function(I) processLoop,
     int? processCount,

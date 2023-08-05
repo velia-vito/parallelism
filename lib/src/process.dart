@@ -1,7 +1,7 @@
 part of '../parallelism.dart';
 
 /// A container within which to run a processLoop
-class Process<O, I> {
+class Process<O, I> implements ParallelizationInterface<O, I> {
   /// [Stream] with processed outputs
   late final Stream<O> stream;
 
@@ -70,8 +70,6 @@ class Process<O, I> {
     var dynamicStream = mainRecvPort.getBroadcastStream();
     _procSendPort = await dynamicStream.first;
 
-    // TODO: yield a custom stream instead of cast, that way you can send both
-    // TODO: a data tag, along side the output (?)
     stream = dynamicStream.cast<O>();
 
     return stream;
@@ -103,8 +101,8 @@ class Process<O, I> {
 
     // run the processing loop till null is sent
     await for (final data in procRecvPort) {
-      if (data is Map<int, I>) {
-        mainSendPort.send(await _processLoop(data.entries.first.value));
+      if (data is I) {
+        mainSendPort.send(await _processLoop(data));
       } else if (data == null) {
         break;
       } else {

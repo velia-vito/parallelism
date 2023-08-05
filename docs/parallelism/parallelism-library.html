@@ -73,22 +73,9 @@ void main(List&lt;String&gt; args) async {
   // top directory for test
   final topDir = Directory(r'A:\\Code');
 
-  // find sub-directories that contain files and can be accessed without a Permission errors
-  final firstSubDir = (await topDir.list().toList()).whereType&lt;Directory&gt;().firstWhere((element) {
-    try {
-      return element.listSync().whereType&lt;File&gt;().length &gt; 10;
-    } catch (e) {
-      return false;
-    }
-  });
-
-  final lastSubDir = (await topDir.list().toList()).whereType&lt;Directory&gt;().lastWhere((element) {
-    try {
-      return element.listSync().whereType&lt;File&gt;().length &gt; 10;
-    } catch (e) {
-      return false;
-    }
-  });
+  // ===============
+  // === Process ===
+  // ===============
 
   // setup up a process to list and return all file paths in the given directory
   var process = Process&lt;List&lt;String&gt;, Directory&gt;(
@@ -106,15 +93,37 @@ void main(List&lt;String&gt; args) async {
     }
   });
 
-  // send a directory to the process
+  // find sub-directories that contain files and can be accessed without a Permission errors
+  final firstSubDir = (await topDir.list().toList()).whereType&lt;Directory&gt;().firstWhere((element) {
+    try {
+      return element.listSync().whereType&lt;File&gt;().length &gt; 10;
+    } catch (e) {
+      return false;
+    }
+  });
+
+  // send the directory to the process
   process.send(firstSubDir);
 
   // NOTE: `kill` will end the process after all current inputs are processed,
   // a.k.a no new inputs are accepted. use `forceKill` to end it instantly
   process.kill();
 
-  // Do the same path listing here, so you can clearly differentiate which is
-  // done in the process and what is done in the main program
+  // ====================
+  // === Main Program ===
+  // ====================
+
+  // Do the same path listing here, but for a different directory, so you
+  // can clearly differentiate which is done in the process and what is done
+  // in the main program
+  final lastSubDir = (await topDir.list().toList()).whereType&lt;Directory&gt;().lastWhere((element) {
+    try {
+      return element.listSync().whereType&lt;File&gt;().length &gt; 10;
+    } catch (e) {
+      return false;
+    }
+  });
+
   for (var filePath
       in (await lastSubDir.list().toList()).whereType&lt;File&gt;().map((e) =&gt; e.path).toList()) {
     print('main: $filePath');
@@ -128,17 +137,18 @@ hit a RAM bottleneck, performance drops faster than yak off a cliff. There
 is also time loss during setup.</p>
 <pre class="language-dart"><code class="language-dart">import 'package:parallelism/parallelism.dart';
 
-// Over 48 cycles, more the cycles, more the time delta
-// 02:18.854134s on 01 threads
-// 01:36.916452s on 04 threads
-// 05:48.823434s on 08 threads (ram bottleneck)
+// Test Results over 48 cycles, more the cycles, more the time delta
+// - 02:18.854134s on 01 threads
+// - 01:36.916452s on 04 threads
+// - 05:48.823434s on 08 threads (ram bottleneck)
 
 void main(List&lt;String&gt; args) async {
+  // start time
   var sTime = DateTime.now();
 
+  // compute fibonacci sequence up to n = 50000000
   var fibProcGroup = ProcessGroup&lt;List&lt;int&gt;, int&gt;(
     processLoop: (n) async {
-      // compute fibonacci sequence up to 50000000
       var fibList = &lt;int&gt;[];
 
       var cur = 1;
@@ -158,12 +168,14 @@ void main(List&lt;String&gt; args) async {
     processCount: 4,
   );
 
+  // start the `ProcessGroup`, print time-delta from program start time for
+  // each return from the `ProcessGroup`
   var stream = await fibProcGroup.start();
   var _ = stream.listen((fibList) {
-    print('Current Delta: ${DateTime.now().difference(sTime)} upto ${fibList.length}');
+    print('Current Delta: ${DateTime.now().difference(sTime)} up to ${fibList.length}');
   });
 
-  // number of cycles
+  // run the same memory-heavy fibonacci computation 48 times
   for (var i = 0; i &lt; 48; i++) {
     fibProcGroup.send(i);
   }
@@ -204,8 +216,7 @@ would mean the port via which the main isolate obtains information, and
 process.</p>
 </li>
 <li>
-<p>The <em>generics</em> <code>O</code>, <code>P</code>, and <code>I</code> refer to Output, Piece (in case of
-<a href="../parallelism/BufferedProcessPrototypeTest-class.html">BufferedProcessPrototypeTest</a>,) and Input types respectively.</p>
+<p>The <em>generics</em> <code>O</code> and <code>I</code> refer to Output and Input types respectively.</p>
 </li>
 <li>
 <p>There is also the matter of class interfaces with a mix of sync and async
@@ -230,13 +241,12 @@ helps understand what to use, when to use, and why it is used.</p>
       <h2>Classes</h2>
 
       <dl>
-        <dt id="BufferedProcessPrototypeTest">
-  <span class="name "><a href="../parallelism/BufferedProcessPrototypeTest-class.html">BufferedProcessPrototypeTest</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">OP</span>, <span class="type-parameter">IP</span>, <span class="type-parameter">I</span>&gt;</span></span> 
+        <dt id="ParallelizationInterface">
+  <span class="name "><a href="../parallelism/ParallelizationInterface-class.html">ParallelizationInterface</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span></span> 
 
 </dt>
 <dd>
-  A process that allows for a single input processed as multiple parts
-Basically a failure
+  The interface that is used to simplify parallelization
 </dd>
 
         <dt id="Process">
@@ -253,6 +263,14 @@ Basically a failure
 </dt>
 <dd>
   Create a bunch of <a href="../parallelism/Process-class.html">Process</a>es that run the same <code>processLoop</code>.
+</dd>
+
+        <dt id="ProcessingLine">
+  <span class="name "><a href="../parallelism/ProcessingLine-class.html">ProcessingLine</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>, <span class="type-parameter">I</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  
 </dd>
 
       </dl>
@@ -308,9 +326,10 @@ Basically a failure
     <h5>parallelism library</h5>
     <ol>
       <li class="section-title"><a href="../parallelism/parallelism-library.html#classes">Classes</a></li>
-        <li><a href="../parallelism/BufferedProcessPrototypeTest-class.html">BufferedProcessPrototypeTest</a></li>
+        <li><a href="../parallelism/ParallelizationInterface-class.html">ParallelizationInterface</a></li>
         <li><a href="../parallelism/Process-class.html">Process</a></li>
         <li><a href="../parallelism/ProcessGroup-class.html">ProcessGroup</a></li>
+        <li><a href="../parallelism/ProcessingLine-class.html">ProcessingLine</a></li>
 
       <li class="section-title"><a href="../parallelism/parallelism-library.html#extensions">Extensions</a></li>
         <li><a href="../parallelism/ReceivePortMod.html">ReceivePortMod</a></li>
