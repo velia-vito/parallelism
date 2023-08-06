@@ -1,131 +1,102 @@
 part of '../parallelism.dart';
 
-// TODO: Rewrite ProcessingLine's addStation methods to be type safe
-
 class ProcessingLine<O, I> implements ParallelizationInterface<O, I> {
   late final Stream<O> stream;
 
-  var _isFinalized = false;
+  final _stations = <ParallelizationInterface>[];
 
-  late final ParallelizationInterface _firstStation;
+  var _lastOType = I;
 
-  late ParallelizationInterface _lastStation;
+  bool _isFinalized = false;
 
-  final _stationCollection = <ParallelizationInterface>[];
-
-  void addFirstProcess(Future Function(I) processLoop) {
-    _firstStation = Process<dynamic, I>(processLoop: processLoop);
-    _lastStation = _firstStation;
-
-    _stationCollection.add(_lastStation);
-  }
-
-  void addFirstProcessGroup(
-    Future Function(I) processLoop,
-    int? processCount,
-  ) {
-    _firstStation = ProcessGroup<dynamic, I>(
-      processLoop: processLoop,
-      processCount: processCount,
-    );
-    _lastStation = _firstStation;
-
-    _stationCollection.add(_lastStation);
-  }
-
-  void addIntermediateProcess<T>(Future Function(T) processLoop) {
+  Future<void> addProcessStation<o, i>({
+    required Future<o> Function(i) processLoop,
+  }) async {
     if (_isFinalized) {
+      throw Exception('ProcessingLine already finalized');
+    }
+
+    if (_lastOType != i) {
       throw Exception(
-        'ProcessingLine is already finalized, cannot add intermediate Processes',
+        'Previous Station return $_lastOType, this Station accepts $i: '
+        'Type-Mismatch Error',
       );
     }
 
-    var intermediateStation = Process<dynamic, T>(processLoop: processLoop);
+    var proc = Process<o, i>(processLoop: processLoop);
+    var _ = await proc.start();
 
-    var __ = _lastStation.stream.listen((intermediateProcessedData) {
-      intermediateStation.send(intermediateProcessedData as T);
-    });
+    if (_stations.isNotEmpty) {
+      var __ = _stations.last.stream.listen((intermediateData) {
+        proc.send(intermediateData);
+      });
+    }
 
-    _lastStation = intermediateStation;
-    _stationCollection.add(intermediateStation);
+    _stations.add(proc);
+    _lastOType = o;
   }
 
-  void addIntermediateProcessGroup<T>(
-    Future Function(T) processLoop,
-    int? processCount,
-  ) {
+  Future<void> addProcessGroupStation<o, i>({
+    required Future<o> Function(i) processLoop,
+    int? procCount,
+  }) async {
     if (_isFinalized) {
+      throw Exception('ProcessingLine already finalized');
+    }
+
+    if (_lastOType != i) {
       throw Exception(
-        'ProcessingLine is already finalized, cannot add intermediate ProcessGroups',
+        'Previous Station return $_lastOType, this Station accepts $i: '
+        'Type-Mismatch Error',
       );
     }
 
-    var intermediateStation = ProcessGroup<dynamic, T>(
+    var proc = ProcessGroup<o, i>(
       processLoop: processLoop,
-      processCount: processCount,
+      processCount: procCount,
     );
+    var _ = await proc.start();
 
-    var __ = _lastStation.stream.listen((intermediateProcessedData) {
-      intermediateStation.send(intermediateProcessedData as T);
-    });
+    if (_stations.isNotEmpty) {
+      var __ = _stations.last.stream.listen((intermediateData) {
+        proc.send(intermediateData);
+      });
+    }
 
-    _lastStation = intermediateStation;
-    _stationCollection.add(intermediateStation);
+    _stations.add(proc);
+    _lastOType = o;
   }
 
-  void addFinalProcess<T>(Future<O> Function(T) processLoop) {
-    var finalStation = Process<O, T>(processLoop: processLoop);
-    stream = finalStation.stream;
-
-    var __ = _lastStation.stream.listen((intermediateProcessedData) {
-      finalStation.send(intermediateProcessedData as T);
-    });
-
-    _isFinalized = true;
-    _lastStation = finalStation;
-    _stationCollection.add(_lastStation);
+  @override
+  void forceKill() {
+    for (var station in _stations) {
+      station.forceKill();
+    }
   }
 
-  void addFinalProcessGroup<T>(
-    Future<O> Function(T) processLoop,
-    int? processCount,
-  ) {
-    var finalStation = ProcessGroup<O, T>(
-      processLoop: processLoop,
-      processCount: processCount,
-    );
-    stream = finalStation.stream;
-
-    var __ = _lastStation.stream.listen((intermediateProcessedData) {
-      finalStation.send(intermediateProcessedData as T);
-    });
-
-    _isFinalized = true;
-    _lastStation = finalStation;
-    _stationCollection.add(_lastStation);
+  @override
+  void kill() {
+    for (var station in _stations) {
+      station.kill();
+    }
   }
 
+  @override
+  void send(I data) {
+    _stations.first.send(data);
+  }
+
+  @override
   Future<Stream<O>> start() async {
-    for (var processOrGroup in _stationCollection) {
-      var _ = await processOrGroup.start();
+    if (_lastOType != O) {
+      throw Exception(
+        'Last Station on this ProcessingLine returns $_lastOType data, it is '
+        'expected to return data of type $O',
+      );
     }
+
+    stream = _stations.last.stream as Stream<O>;
 
     return stream;
-  }
-
-  void send(I data) {
-    _firstStation.send(data);
-  }
-
-  void kill() {
-    for (var processOrGroup in _stationCollection) {
-      processOrGroup.kill();
-    }
-  }
-
-  void forceKill() {
-    for (var processOrGroup in _stationCollection) {
-      processOrGroup.forceKill();
-    }
   }
 }
