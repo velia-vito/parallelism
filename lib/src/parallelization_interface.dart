@@ -5,6 +5,12 @@ abstract interface class ParallelizationInterface<O, I> {
   /// A [Stream] with processed outputs
   Stream<O> get stream;
 
+  /// Input Type for this process
+  Type get iType;
+
+  /// Output Type for this process
+  Type get oType;
+
   /// Start the required [Isolate]s and perform a "hand-shake"
   Future<Stream<O>> start();
 

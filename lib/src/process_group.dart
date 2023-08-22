@@ -2,7 +2,14 @@ part of '../parallelism.dart';
 
 /// Create a bunch of [Process]es that run the same `processLoop`.
 class ProcessGroup<O, I> implements ParallelizationInterface<O, I> {
+  @override
+  late final Type iType;
+
+  @override
+  late final Type oType;
+
   /// [Stream] with processed outputs
+  @override
   late final Stream<O> stream;
 
   final _procGroup = <Process>[];
@@ -32,6 +39,9 @@ class ProcessGroup<O, I> implements ParallelizationInterface<O, I> {
     for (var i = 0; i < _activeProcCount; i++) {
       _procGroup.add(Process<O, I>(processLoop: processLoop));
     }
+
+    iType = I;
+    oType = O;
   }
 
   /// Start up the `ProcessGroup`. Call this before sending any data to the

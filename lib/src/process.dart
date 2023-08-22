@@ -2,7 +2,14 @@ part of '../parallelism.dart';
 
 /// A container within which to run a processLoop
 class Process<O, I> implements ParallelizationInterface<O, I> {
+  @override
+  late final iType;
+
+  @override
+  late final oType;
+
   /// [Stream] with processed outputs
+  @override
   late final Stream<O> stream;
 
   /// The [Isolate] running the `Process`
@@ -21,7 +28,9 @@ class Process<O, I> implements ParallelizationInterface<O, I> {
   /// `Process`
   Process({
     required Future<O> Function(I) processLoop,
-  }) : _processLoop = processLoop;
+  })  : _processLoop = processLoop,
+        iType = I,
+        oType = O;
 
   /// Start up the `Process`. Call this before sending any data to the `Process`
   ///

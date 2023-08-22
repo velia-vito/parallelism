@@ -146,6 +146,9 @@ void main(List&lt;String&gt; args) async {
   // start time
   var sTime = DateTime.now();
 
+  // ====================
+  // === ProcessGroup ===
+  // ====================
   // compute fibonacci sequence up to n = 50000000
   var fibProcGroup = ProcessGroup&lt;List&lt;int&gt;, int&gt;(
     processLoop: (n) async {
@@ -168,6 +171,10 @@ void main(List&lt;String&gt; args) async {
     processCount: 4,
   );
 
+  // ====================
+  // === Main Program ===
+  // ====================
+
   // start the `ProcessGroup`, print time-delta from program start time for
   // each return from the `ProcessGroup`
   var stream = await fibProcGroup.start();
@@ -181,6 +188,88 @@ void main(List&lt;String&gt; args) async {
   }
 
   fibProcGroup.kill();
+}
+</code></pre>
+<p>The <a href="../parallelism/ProcessingLine-class.html">ProcessingLine</a> class for for when you have a multi-step workload where
+it does not make sense to expend equal compute resources on each step. Eg.
+You're trying to download a comic, you could have just 2 <a href="../parallelism/Process-class.html">Process</a>es for
+requesting the links to the page images and then have a 6-process
+<a href="../parallelism/ProcessGroup-class.html">ProcessGroup</a> to download those pages.</p>
+<pre class="language-dart"><code class="language-dart">import 'dart:math';
+
+import 'package:parallelism/parallelism.dart';
+
+void main(List&lt;String&gt; args) async {
+  const chars = 'AaBbCcDdEe FfGgHhIiJj KkLlMmNnOo PpQqRrSsTt UuVvWwXxYy Zz12345678 90';
+  Random randomEngine = Random();
+
+  // ===============
+  // === Process ===
+  // ===============
+
+  // generate random paragraph lengths
+  var numSetProc = Process(
+    processLoop: (int paragraphCount) async {
+      var paragraphLengthSpec = &lt;int&gt;[];
+
+      for (var i = 0; i &lt; paragraphCount; i++) {
+        paragraphLengthSpec.add(randomEngine.nextInt(20) * 50);
+      }
+
+      // This is why ProcessingLine's addStation methods need to be re-written
+      return paragraphLengthSpec;
+    },
+  );
+
+  // ====================
+  // === ProcessGroup ===
+  // ====================
+
+  // generate paragraphs
+  var paraGenProcGrp = ProcessGroup(
+    processLoop: (List&lt;int&gt; paraSpec) async {
+      var masterText = '';
+
+      for (var length in paraSpec) {
+        var paraString = String.fromCharCodes(
+          Iterable.generate(
+            length,
+            (_) =&gt; chars.codeUnitAt(randomEngine.nextInt(chars.length)),
+          ),
+        );
+
+        masterText += '$paraString\n\n';
+      }
+
+      return masterText;
+    },
+  );
+
+  // ===================
+  // === ProcessLine ===
+  // ===================
+
+  // Setup ProcessingLine
+  var procLine = ProcessingLine&lt;String, int&gt;();
+  procLine.addStation(numSetProc);
+  procLine.addStation(paraGenProcGrp);
+
+  var _ = await procLine.start();
+
+  // ====================
+  // === Main Program ===
+  // ====================
+
+  var __ = procLine.stream.listen((data) {
+    print(data);
+  });
+
+  // Send data for processing
+  for (var i = 0; i &lt; 10; i++) {
+    procLine.send(randomEngine.nextInt(10));
+  }
+
+  procLine.kill();
 }
 </code></pre>
 <h3 id="design-considerations">Design Considerations:</h3>
@@ -270,7 +359,8 @@ helps understand what to use, when to use, and why it is used.</p>
 
 </dt>
 <dd>
-  
+  Order <a href="../parallelism/Process-class.html">Process</a>es and <a href="../parallelism/ProcessGroup-class.html">ProcessGroup</a>s sequentially to complete a complex,
+multi-step workload akin to how factory lines work.
 </dd>
 
       </dl>

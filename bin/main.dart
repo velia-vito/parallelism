@@ -4,17 +4,19 @@ import 'package:parallelism/parallelism.dart';
 
 void main(List<String> args) async {
   const chars = 'AaBbCcDdEe FfGgHhIiJj KkLlMmNnOo PpQqRrSsTt UuVvWwXxYy Zz12345678 90';
-  Random rnd = Random();
+  Random randomEngine = Random();
 
-  var pl = ProcessingLine<String, int>();
+  // ===============
+  // === Process ===
+  // ===============
 
-  // generate random text blocks: paragraph lengths
-  await pl.addProcessStation<List<int>, int>(
-    processLoop: (paragraphCount) async {
+  // generate random paragraph lengths
+  var numSetProc = Process(
+    processLoop: (int paragraphCount) async {
       var paragraphLengthSpec = <int>[];
 
       for (var i = 0; i < paragraphCount; i++) {
-        paragraphLengthSpec.add(rnd.nextInt(20) * 50);
+        paragraphLengthSpec.add(randomEngine.nextInt(20) * 50);
       }
 
       // This is why ProcessingLine's addStation methods need to be re-written
@@ -22,16 +24,20 @@ void main(List<String> args) async {
     },
   );
 
+  // ====================
+  // === ProcessGroup ===
+  // ====================
+
   // generate paragraphs
-  await pl.addProcessGroupStation<String, List<int>>(
-    processLoop: (paraSpec) async {
+  var paraGenProcGrp = ProcessGroup(
+    processLoop: (List<int> paraSpec) async {
       var masterText = '';
 
       for (var length in paraSpec) {
         var paraString = String.fromCharCodes(
           Iterable.generate(
             length,
-            (_) => chars.codeUnitAt(rnd.nextInt(chars.length)),
+            (_) => chars.codeUnitAt(randomEngine.nextInt(chars.length)),
           ),
         );
 
@@ -42,26 +48,29 @@ void main(List<String> args) async {
     },
   );
 
-  var _ = await pl.start();
+  // ===================
+  // === ProcessLine ===
+  // ===================
 
+  // Setup ProcessingLine
+  var procLine = ProcessingLine<String, int>();
+  procLine.addStation(numSetProc);
+  procLine.addStation(paraGenProcGrp);
+
+  var _ = await procLine.start();
+
+  // ====================
+  // === Main Program ===
+  // ====================
+
+  var __ = procLine.stream.listen((data) {
+    print(data);
+  });
+
+  // Send data for processing
   for (var i = 0; i < 10; i++) {
-    pl.send(rnd.nextInt(10));
+    procLine.send(randomEngine.nextInt(10));
   }
 
-  // Causes Error cuz ProcessGroup ActiveProcesses decrements well before the
-  // send command is called and DivisionByZero Occurs
-  //
-  // var __ = pl.stream.listen((par) {
-  //   print(par);
-  //   print('\n\n----------------------------------------------------------\n\n');
-  // });
-
-  await for (var par in pl.stream) {
-    print(par);
-    print('\n\n----------------------------------------------------------\n\n');
-  }
-
-  pl.kill();
-
-  // TODO: Find cause for non-exiting behaviour and fix it
+  procLine.kill();
 }

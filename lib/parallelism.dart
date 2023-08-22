@@ -93,6 +93,9 @@
 ///   // start time
 ///   var sTime = DateTime.now();
 ///
+///   // ====================
+///   // === ProcessGroup ===
+///   // ====================
 ///   // compute fibonacci sequence up to n = 50000000
 ///   var fibProcGroup = ProcessGroup<List<int>, int>(
 ///     processLoop: (n) async {
@@ -115,6 +118,10 @@
 ///     processCount: 4,
 ///   );
 ///
+///   // ====================
+///   // === Main Program ===
+///   // ====================
+///
 ///   // start the `ProcessGroup`, print time-delta from program start time for
 ///   // each return from the `ProcessGroup`
 ///   var stream = await fibProcGroup.start();
@@ -128,6 +135,91 @@
 ///   }
 ///
 ///   fibProcGroup.kill();
+/// }
+/// ```
+///
+/// The [ProcessingLine] class for for when you have a multi-step workload where
+/// it does not make sense to expend equal compute resources on each step. Eg.
+/// You're trying to download a comic, you could have just 2 [Process]es for
+/// requesting the links to the page images and then have a 6-process
+/// [ProcessGroup] to download those pages.
+///
+/// ```dart
+/// import 'dart:math';
+///
+/// import 'package:parallelism/parallelism.dart';
+///
+/// void main(List<String> args) async {
+///   const chars = 'AaBbCcDdEe FfGgHhIiJj KkLlMmNnOo PpQqRrSsTt UuVvWwXxYy Zz12345678 90';
+///   Random randomEngine = Random();
+///
+///   // ===============
+///   // === Process ===
+///   // ===============
+///
+///   // generate random paragraph lengths
+///   var numSetProc = Process(
+///     processLoop: (int paragraphCount) async {
+///       var paragraphLengthSpec = <int>[];
+///
+///       for (var i = 0; i < paragraphCount; i++) {
+///         paragraphLengthSpec.add(randomEngine.nextInt(20) * 50);
+///       }
+///
+///       // This is why ProcessingLine's addStation methods need to be re-written
+///       return paragraphLengthSpec;
+///     },
+///   );
+///
+///   // ====================
+///   // === ProcessGroup ===
+///   // ====================
+///
+///   // generate paragraphs
+///   var paraGenProcGrp = ProcessGroup(
+///     processLoop: (List<int> paraSpec) async {
+///       var masterText = '';
+///
+///       for (var length in paraSpec) {
+///         var paraString = String.fromCharCodes(
+///           Iterable.generate(
+///             length,
+///             (_) => chars.codeUnitAt(randomEngine.nextInt(chars.length)),
+///           ),
+///         );
+///
+///         masterText += '$paraString\n\n';
+///       }
+///
+///       return masterText;
+///     },
+///   );
+///
+///   // ===================
+///   // === ProcessLine ===
+///   // ===================
+///
+///   // Setup ProcessingLine
+///   var procLine = ProcessingLine<String, int>();
+///   procLine.addStation(numSetProc);
+///   procLine.addStation(paraGenProcGrp);
+///
+///   var _ = await procLine.start();
+///
+///   // ====================
+///   // === Main Program ===
+///   // ====================
+///
+///   var __ = procLine.stream.listen((data) {
+///     print(data);
+///   });
+///
+///   // Send data for processing
+///   for (var i = 0; i < 10; i++) {
+///     procLine.send(randomEngine.nextInt(10));
+///   }
+///
+///   procLine.kill();
 /// }
 /// ```
 ///
