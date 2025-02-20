@@ -57,7 +57,7 @@
 
     <section class="multi-line-signature">
       
-<span class="returntype"><a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.7.0/dart-async/Completer-class.html">Completer</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span>&gt;</span></span>
+<span class="returntype"><a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span>
 <span class="name ">process</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="process-param-input"><span class="type-annotation">I</span> <span class="parameter-name">input</span></span></li>
 </ol>)
 
@@ -66,14 +66,14 @@
     </section>
     
 <section class="desc markdown">
-  <p>Process the given input in a separate process.</p>
+  <p>Process the given input in a separate process. (bg-proc).</p>
 </section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">Future&lt;Completer&lt;O&gt;&gt; process(I input);</code></pre>
+  <pre class="language-dart"><code class="language-dart">Future&lt;O&gt; process(I input);</code></pre>
 </section>
 
 
@@ -101,7 +101,7 @@
 <footer>
   <span class="no-break">
     parallelism
-      2.0.1-beta
+      2.2.0-beta
   </span>
   
 </footer>

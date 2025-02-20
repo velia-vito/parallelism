@@ -70,7 +70,7 @@
     </section>
     
 <section class="desc markdown">
-  <p>Kill the spawned process immediately.</p>
+  <p>Kill the spawned process immediately. (im-proc).</p>
 </section>
 
 
@@ -80,7 +80,9 @@
   <pre class="language-dart"><code class="language-dart">@override
 Future&lt;void&gt; shutdownNow() async {
   _isActive = false;
+
   _isolate.kill(priority: Isolate.immediate);
+  _processingComplete.complete();
 
   &#47;&#47; Clean up connections to allow Main Isolate to exit.
   _fromProcessPort.close();
@@ -112,7 +114,7 @@ Future&lt;void&gt; shutdownNow() async {
 <footer>
   <span class="no-break">
     parallelism
-      2.0.1-beta
+      2.2.0-beta
   </span>
   
 </footer>

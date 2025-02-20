@@ -36,12 +36,15 @@ abstract interface class ParallelizationInterface<I, O, CR> {
   /// - See Note on [ParallelizationInterface].
   Future<void> Function(CR commonResourceRecord) get shutdownProcess;
 
-  /// Process the given input in a separate process.
-  Future<Completer<O>> process(I input);
+  /// Returns `null` when all processing is completed.
+  Future<void> get processingIsComplete;
 
-  /// Kill the spawned process after processing current items in queue.
+  /// Process the given input in a separate process. (bg-proc).
+  Future<O> process(I input);
+
+  /// Kill the spawned process after processing current items in queue. (bg-proc).
   Future<void> shutdownOnCompletion();
 
-  /// Kill the spawned process immediately.
+  /// Kill the spawned process immediately. (im-proc).
   Future<void> shutdownNow();
 }

@@ -70,7 +70,7 @@
     </section>
     
 <section class="desc markdown">
-  <p>Kill the spawned process after processing current items in queue.</p>
+  <p>Kill the spawned process after processing current items in queue. (bg-proc).</p>
 </section>
 
 
@@ -81,9 +81,6 @@
 Future&lt;void&gt; shutdownOnCompletion() async {
   _isActive = false;
   _toProcessPort.send(shutdownCode);
-
-  &#47;&#47; Clean up connections to allow Main Isolate to exit.
-  _fromProcessPort.close();
 }</code></pre>
 </section>
 
@@ -112,7 +109,7 @@ Future&lt;void&gt; shutdownOnCompletion() async {
 <footer>
   <span class="no-break">
     parallelism
-      2.0.1-beta
+      2.2.0-beta
   </span>
   
 </footer>

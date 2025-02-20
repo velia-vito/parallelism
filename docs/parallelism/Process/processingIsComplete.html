@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the shutdownOnCompletion method from the ParallelizationInterface class, for the Dart programming language.">
-  <title>shutdownOnCompletion method - ParallelizationInterface class - parallelism library - Dart API</title>
+  <meta name="description" content="API docs for the processingIsComplete property from the Process class, for the Dart programming language.">
+  <title>processingIsComplete property - Process class - parallelism library - Dart API</title>
 
 
   
@@ -26,10 +26,10 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../../index.html">parallelism</a></li>
     <li><a href="../../parallelism">parallelism.dart</a></li>
-    <li><a href="../../parallelism/ParallelizationInterface-class.html">ParallelizationInterface<span class="signature">&lt;<wbr><span class="type-parameter">I</span>, <span class="type-parameter">O</span>, <span class="type-parameter">CR</span>&gt;</span></a></li>
-    <li class="self-crumb">shutdownOnCompletion abstract method</li>
+    <li><a href="../../parallelism/Process-class.html">Process<span class="signature">&lt;<wbr><span class="type-parameter">I</span>, <span class="type-parameter">O</span>, <span class="type-parameter">CR</span>&gt;</span></a></li>
+    <li class="self-crumb">processingIsComplete property</li>
   </ol>
-  <div class="self-name">shutdownOnCompletion</div>
+  <div class="self-name">processingIsComplete</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -49,36 +49,48 @@
 <div
     id="dartdoc-main-content"
     class="main-content"
-    data-above-sidebar="parallelism&#47;ParallelizationInterface-class-sidebar.html"
+    data-above-sidebar="parallelism&#47;Process-class-sidebar.html"
     data-below-sidebar="">
     <div>
-<h1><span class="kind-method">shutdownOnCompletion</span> abstract method 
+<h1><span class="kind-property">processingIsComplete</span> property 
 </h1></div>
 
+    
+
+    
+        
+  <section id="getter">
     <section class="multi-line-signature">
       
-<span class="returntype"><a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
-<span class="name ">shutdownOnCompletion</span>(<wbr>)
-
-      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.dart.dev/stable/3.7.0/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+      <span class="returntype"><a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+      get
+      <span class="name ">processingIsComplete</span>
+      <div class="features"><span class="feature">override</span></div>
 
     </section>
     
 <section class="desc markdown">
-  <p>Kill the spawned process after processing current items in queue. (bg-proc).</p>
+  <p>Returns <code>null</code> when all processing is completed.</p>
 </section>
-
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">Future&lt;void&gt; shutdownOnCompletion();</code></pre>
+  <pre class="language-dart"><code class="language-dart">@override
+Future&lt;void&gt; get processingIsComplete =&gt; _processingComplete.future;</code></pre>
 </section>
 
+  </section>
 
-  </div> <!-- /.main-content -->
-  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+
+</div> <!-- /.main-content -->
+<div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+  <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
 <header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
     <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
@@ -87,14 +99,14 @@
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../../index.html">parallelism</a></li>
     <li><a href="../../parallelism">parallelism</a></li>
-    <li><a href="../../parallelism/ParallelizationInterface-class.html">ParallelizationInterface<span class="signature">&lt;<wbr><span class="type-parameter">I</span>, <span class="type-parameter">O</span>, <span class="type-parameter">CR</span>&gt;</span></a></li>
-    <li class="self-crumb">shutdownOnCompletion abstract method</li>
+    <li><a href="../../parallelism/Process-class.html">Process<span class="signature">&lt;<wbr><span class="type-parameter">I</span>, <span class="type-parameter">O</span>, <span class="type-parameter">CR</span>&gt;</span></a></li>
+    <li class="self-crumb">processingIsComplete property</li>
 </ol>
 
-    <h5>ParallelizationInterface class</h5>
-    <div id="dartdoc-sidebar-left-content"></div>
-  </div><!--/.sidebar-offcanvas-->
-  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  <h5>Process class</h5>
+  <div id="dartdoc-sidebar-left-content"></div>
+</div><!--/.sidebar-offcanvas-->
+<div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
 </div><!--/.sidebar-offcanvas-->
 </main>
 <footer>

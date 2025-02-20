@@ -1,0 +1,3 @@
+docs/*
+.vscode/*
+.dart_tool/*

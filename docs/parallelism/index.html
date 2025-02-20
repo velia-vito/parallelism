@@ -63,7 +63,80 @@
 
     
 <section class="desc markdown">
-  <p>Stuff.</p>
+  <p>Run Code in parallel without having to worry about low-level <a href="https://api.dart.dev/stable/3.7.0/dart-isolate/Isolate-class.html">Isolate</a> details.</p>
+<h2 id="overview">Overview</h2>
+<p>The library is built around <a href="../parallelism/ParallelizationInterface-class.html">ParallelizationInterface</a>, the most fundamental implementation of
+which is the <a href="../parallelism/Process-class.html">Process</a> class. Both the <a href="../parallelism/ProcessGroup-class.html">ProcessGroup</a> and <a href="../parallelism/ProcessWorkflow-class.html">ProcessWorkflow</a> classes are simply
+utility wrappers around the <code>Process</code> class.</p>
+<h3 id="conceptual-notes">Conceptual Notes</h3>
+<ol>
+<li>
+<p><code>Processing Loop</code>: A <code>Process</code> runs a single callback, <a href="../parallelism/Process/processInput.html">Process.processInput</a> every time it
+is presented with a fresh input. This is the <em>Processing Loop</em> (called as such because the same
+method is called back repeatedly for each input).</p>
+</li>
+<li>
+<p><code>Setup</code>: Let's say you're running a process to download multiple files in
+parallel to the main isolate. You have two options: (a) create a new HTTP client for each file
+download (inefficient due to overhead), or (b) create a single HTTP client and reuse it for all
+file downloads (much more efficient). The <code>Processing Loop</code> is not capable of variable
+persistence, so, such persistent variables have to be created outside of the <code>Processing Loop</code>.
+This is done before the <code>Processing Loop</code> starts by the <a href="../parallelism/Process/setupProcess.html">Process.setupProcess</a> callback.</p>
+</li>
+<li>
+<p><code>Common Resource Record</code>: Let's say that your <code>Processing Loop</code> requires multiple common
+resources. Unlike Python, Dart doesn't allow arbitrary length arguments. So, how do you pass
+such a variable length list of common resources while maintaining type safety? We do so by
+bundling all common resources into a single <a href="https://dart.dev/language/records">Record</a>. As you
+are aware of the Record's structure, you can easily destructure it to access individual <code>Common Resources</code> within the <code>Processing Loop</code> and the subsequent <code>Clean Up</code>.</p>
+</li>
+<li>
+<p><code>Clean Up</code>: After the <code>Processing Loop</code> has completed, the <code>Common Resources</code> need to be
+cleaned up to allow proper termination of the application and to prevent other unexpected
+behaviors. This is done by the <a href="../parallelism/Process/shutdownProcess.html">Process.shutdownProcess</a> callback.</p>
+</li>
+<li>
+<p>The overall functioning of any implementation of <code>ParallelizationInterface</code> is as follows:
+<code>Create Common Resources</code> -&gt; <code>Process Input</code> (repeatedly) -&gt; <code>Clean Up</code> -&gt; <code>TerminateProcess</code>.</p>
+</li>
+<li>
+<p><code>Future</code>: A <a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a> is a <em>promise</em> of a value. It is important to understand that a <code>Future</code>
+is not the value itself, but a <em>promise</em> to deliver the value at some point in the future.</p>
+</li>
+<li>
+<p><code>Future Completion</code>: When a <code>Future</code> upholds its promise and delivers the value, we call this
+<em>delivering of the value</em> as <code>Future Completion</code>. The important part is that a <code>Future</code> may
+<em>complete</em> almost immediately as if it were a synchronous function, or it may take a significant
+amount of time to <em>complete</em>.</p>
+</li>
+<li>
+<p><code>Future.then</code> vs <code>await</code>: <code>await</code> is best used when the value of a future is absolutely
+required for the next step in the program, or when you're using the completion of a future as
+a <em>lock</em> to prevent further execution until some condition is met. <code>Future.then</code> is best used
+when you want to perform some action after the completion of a <code>Future</code> that displays
+significant delay before completion.</p>
+</li>
+</ol>
+<h3 id="misc-notes">Misc Notes</h3>
+<ul>
+<li>
+<p>The words <code>Process</code> and <code>Isolate</code> are used interchangeably in this library.</p>
+</li>
+<li>
+<p>All async methods will be marked as follows:</p>
+<ul>
+<li>
+<p><code>(bg-proc)</code>: Background Process. Indicates that there is a significant delay between the
+method returning a <code>Future</code> and the <code>Future</code> completing. These methods are best handles with
+<a href="https://api.dart.dev/stable/3.7.0/dart-core/Future/then.html">Future.then</a>.</p>
+</li>
+<li>
+<p><code>(im-proc)</code>: Immediate Process. Indicates that the <code>Future</code> will complete almost immediately
+after it is returned. These methods are best handled with <code>await</code>.</p>
+</li>
+</ul>
+</li>
+</ul>
 </section>
 
 
@@ -84,6 +157,22 @@
 </dt>
 <dd>
   Creates a new <em>process</em> and runs your code in parallel.
+</dd>
+
+          <dt id="ProcessGroup">
+  <span class="name "><a href="../parallelism/ProcessGroup-class.html">ProcessGroup</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="ProcessWorkflow">
+  <span class="name "><a href="../parallelism/ProcessWorkflow-class.html">ProcessWorkflow</a></span> 
+
+</dt>
+<dd>
+  
 </dd>
 
       </dl>
@@ -124,7 +213,7 @@
 <footer>
   <span class="no-break">
     parallelism
-      2.0.1-beta
+      2.2.0-beta
   </span>
   
 </footer>

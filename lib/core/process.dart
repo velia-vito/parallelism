@@ -9,6 +9,83 @@ part of '../parallelism.dart';
 /// |   `O`   | Output Type                                                   |
 /// |  `CR`   | Common Resource (see [ParallelizationInterface] Note)         |
 ///
+/// ### Usage
+/// ```dart
+/// // Example: Generate random length Lorem Ipsum by calling some web API.
+///
+/// // typedef the commonResourceRecord format for ease of understanding.
+/// typedef RandomClient = (Random, HttpClient);
+///
+/// // Setup: Create and return a Strand.
+/// Future<RandomClient> setupCommonResources() async {
+///   return (
+///     // Random number generator.
+///     Random(),
+///
+///     // HTTP Client.
+///    HttpClient(),
+///   );
+/// }
+///
+/// // Process Loop: Generate a paragraph of Lorem Ipsum.
+/// Future<String> generateParagraph(int charCount, Strand commonResources) async {
+///   // Destructure the record.
+///   var (randomGenerator, httpClient) = commonResources;
+///
+///   // Do Processing...
+///
+///   return loremIpsumString;
+/// }
+///
+/// // Clean Up: Close the HTTP Client.
+/// Future<void> cleanupStrand(Strand commonResources) async {
+///   // Destructure the record.
+///   var (randomGenerator, httpClient) = commonResources;
+///
+///   // Do Cleanup...
+///   await httpClient.close();
+/// }
+///
+/// // Main: Putting it all together.
+/// void main() async {
+///   // Create a new process.
+///   var process = await Process.boot(setupCommonResources, generateParagraph, cleanupStrand);
+///
+///   // Meta Processing.
+///   var totalTextLength = 0;
+///
+///   // We use `Future.then` instead of `await` as `Process.process` is (bg-proc), i.e., there is a
+///   // significant difference between the obtaining of the future and the completion of the
+///   // future. It is simply more sensible not to stop execution until the `Future` is complete.
+///   process.process(25).then((paragraph) {
+///     print(paragraph);
+///     totalTextLength += paragraph.length;
+///   });
+///
+///   process.process(50).then((paragraph) {
+///     print(paragraph);
+///     totalTextLength += paragraph.length;
+///   });
+///
+///   process.process(70).then((paragraph) {
+///     print(paragraph);
+///     totalTextLength += paragraph.length;
+///   });
+///
+///   // Will prevent further calls to `Process.process` and will shutdown the `Process` after
+///   // all current inputs have been processed. You don't have to worry about the `Process` exiting
+///   // before all inputs have been processed.
+///   await process.shutdownOnCompletion();
+///
+///   // You can also perform actions after all inputs have been processed.
+///   // `Process.processingIsComplete` frees you up from tracking each individual input's
+///   //  processing status manually.
+///   process.processingIsComplete.then((_) {
+///     print('Total Text Length: $totalTextLength');
+///   });
+/// }
+/// ```
+///
 /// ### Note
 /// - We use [Completer]s to notify the user when an input has been processed, but, if we were to
 /// call [Completer.complete] from a separate [Isolate], it would achieve nothing as each `Isolate`
@@ -37,6 +114,9 @@ class Process<I, O, CR> implements ParallelizationInterface<I, O, CR> {
   @override
   final Future<void> Function(CR commonResourceRecord) shutdownProcess;
 
+  /// Underlying completer for [processingIsComplete].
+  final Completer<void> _processingComplete = Completer<void>.sync();
+
   /// All completer and their relevant ids. This is used to link input/output to the
   /// relevant completer.
   final Map<int, Completer<O>> _unprocessedInputs = {};
@@ -59,6 +139,9 @@ class Process<I, O, CR> implements ParallelizationInterface<I, O, CR> {
   /// Weather the process is still accepting inputs.
   bool get isActive => _isActive;
 
+  @override
+  Future<void> get processingIsComplete => _processingComplete.future;
+
   /// Create a new [Process] instance. Use [Process.boot] to create a new instance.
   Process(
     this.setupProcess,
@@ -76,11 +159,16 @@ class Process<I, O, CR> implements ParallelizationInterface<I, O, CR> {
       // Complete the relevant completer.
       _unprocessedInputs[completerId]!.complete(output);
       var _ = _unprocessedInputs.remove(completerId);
+
+      if (!isActive && _unprocessedInputs.isEmpty) {
+        _fromProcessPort.close();
+        _processingComplete.complete();
+      }
     });
   }
 
   @override
-  Future<Completer<O>> process(I input) async {
+  Future<O> process(I input) async {
     // If the process is not active, throw an error.
     if (!isActive) {
       throw StateError(
@@ -96,13 +184,15 @@ class Process<I, O, CR> implements ParallelizationInterface<I, O, CR> {
     _unprocessedInputs[id] = processingStatusLock;
     _toProcessPort.send((id, input));
 
-    return processingStatusLock;
+    return processingStatusLock.future;
   }
 
   @override
   Future<void> shutdownNow() async {
     _isActive = false;
+
     _isolate.kill(priority: Isolate.immediate);
+    _processingComplete.complete();
 
     // Clean up connections to allow Main Isolate to exit.
     _fromProcessPort.close();
@@ -112,9 +202,6 @@ class Process<I, O, CR> implements ParallelizationInterface<I, O, CR> {
   Future<void> shutdownOnCompletion() async {
     _isActive = false;
     _toProcessPort.send(shutdownCode);
-
-    // Clean up connections to allow Main Isolate to exit.
-    _fromProcessPort.close();
   }
 
   /// Create a new Operating System process. Runs on main Process.
@@ -214,11 +301,14 @@ class Process<I, O, CR> implements ParallelizationInterface<I, O, CR> {
             toMainPort.send((completerId, output));
           });
         } else {
+          toMainPort.send(shutdownCode);
           fromMainPort.close();
 
           // ignore: prefer-async-await, async flexibility, sync required.
           shutdownProcess(commonResources).then((_) {
-            Isolate.current.kill();
+            // Note, killing the Isolate will break `shutdownOnComplete` as the isolate can no
+            // longer process inputs on kill and hence _unprocessedInputs will never be empty.
+            return;
           });
         }
       });

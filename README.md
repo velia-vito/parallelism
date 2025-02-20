@@ -1,19 +1,11 @@
 # Parallelism: Concurrency made simple
 
-(⚠️ Most of the relevant documentation is built into the source code, generate docs with dartdoc for
-comprehensive documentation.)
+```ps
+dart doc --output doc
+```
 
-While concurrency is comparatively less hairy in dart/flutter, writing code to leverage concurrency
-is still not as simple as it could be. This package aims to change that.
-
-## Primary Features
-
-1. Setting up long-running `Isolate`s with all of four Send/Receive Ports is a pain. We get that
-   'Handshake' done for you.
-
-2. Similarly, the data returned by the Isolate being typed as dynamic is also annoying, we go ahead
-   and deal with that too. So, now you don't have to deal with finicky type-casting inputs across
-   your background tasks.
+⚠️ All relevant documentation is built into the source code, generate docs with dartdoc for
+comprehensive documentation. Or, view the documentation online on this repo's Github Pages.
 
 ## Code Conventions
 

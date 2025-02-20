@@ -1,39 +1,64 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:parallelism/parallelism.dart';
 
-void main(List<String> args) async {
-  final procCount = 1;
+void main() async {
+  var maxCount = Platform.numberOfProcessors;
 
+  while (maxCount != 1) {
+    await testPrefGain(maxCount);
+
+    maxCount = maxCount ~/ 2;
+  }
+}
+
+// ignore: prefer-static-class, as this will be called inside the isolate.
+Future<void> testPrefGain(int procCount) async {
+  // 1. Generate procCount number of processes.
   var procGrp = <Process<int, String, (String, Random)>>[];
 
   for (var i = 0; i < procCount; i++) {
     procGrp.add(await Process.boot(generateCommonResourceRecord, generateParagraph, cleanup));
   }
 
-  // Send random inputs & process outputs.
-  var randomEngine = Random();
-
+  // 2. Send random inputs, find related outputs.
+  // Check time here, to exclude setup time.
   var initTime = DateTime.now();
+
   var charCount = 0;
 
-  for (var i = 0; i < 10000; i++) {
-    var paragraphLock = await procGrp.elementAt(i % procCount).process(randomEngine.nextInt(25));
+  // 3. Send 100000 random inputs to the processes.
+  for (var i = 0; i < 50000; i++) {
+    var paragraphLock = procGrp.elementAt(i % procCount).process(50);
 
-    var paragraph = await paragraphLock.future;
-    charCount += paragraph.length;
+    // Using `Future.then` as `Process.process` is tagged (bg-proc), see Library Documentation Notes.
+    paragraphLock.then((paragraph) {
+      charCount += paragraph.length;
+    });
   }
 
-  var endTime = DateTime.now();
+  var cmplCount = 0;
 
-  print('$charCount generated in ${endTime.difference(initTime).inMilliseconds}ms');
-
+  // 4. Shutdown all processes.
   for (var proc in procGrp) {
     await proc.shutdownOnCompletion();
-  }
 
-  print('should exit');
+    // Easy way to check if all inputs have been processed have completed.
+    proc.processingIsComplete.then((_) {
+      cmplCount++;
+
+      // Additional step to check if all processes in the Group have completed.
+      if (cmplCount == procCount) {
+        var endTime = DateTime.now();
+
+        print(
+          'proc(${procCount.toString().padLeft(2, '0')}) $charCount generated in ${endTime.difference(initTime).inSeconds}s, ${charCount ~/ endTime.difference(initTime).inMilliseconds} cr/ms',
+        );
+      }
+    });
+  }
 }
 
 // ignore: prefer-static-class, as this will be called inside the isolate.

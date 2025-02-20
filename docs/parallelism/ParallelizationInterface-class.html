@@ -136,6 +136,18 @@ the record in your <a href="../parallelism/ParallelizationInterface/processInput
 
 </dd>
 
+        <dt id="processingIsComplete" class="property">
+  <span class="name"><a href="../parallelism/ParallelizationInterface/processingIsComplete.html">processingIsComplete</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  Returns <code>null</code> when all processing is completed.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
         <dt id="processInput" class="property">
   <span class="name"><a href="../parallelism/ParallelizationInterface/processInput.html">processInput</a></span>
   <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span> Function<span class="signature">(<span class="parameter" id="param-input"><span class="type-annotation">I</span> <span class="parameter-name">input</span>, </span><span class="parameter" id="param-commonResourceRecord"><span class="type-annotation">CR</span> <span class="parameter-name">commonResourceRecord</span></span>)</span></span>
@@ -208,13 +220,13 @@ the record in your <a href="../parallelism/ParallelizationInterface/processInput
 
         <dt id="process" class="callable">
   <span class="name"><a href="../parallelism/ParallelizationInterface/process.html">process</a></span><span class="signature">(<wbr><span class="parameter" id="process-param-input"><span class="type-annotation">I</span> <span class="parameter-name">input</span></span>)
-    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.7.0/dart-async/Completer-class.html">Completer</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span>&gt;</span></span>
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span>
   </span>
   
 
 </dt>
 <dd>
-  Process the given input in a separate process.
+  Process the given input in a separate process. (bg-proc).
   
 
 </dd>
@@ -227,7 +239,7 @@ the record in your <a href="../parallelism/ParallelizationInterface/processInput
 
 </dt>
 <dd>
-  Kill the spawned process immediately.
+  Kill the spawned process immediately. (im-proc).
   
 
 </dd>
@@ -240,7 +252,7 @@ the record in your <a href="../parallelism/ParallelizationInterface/processInput
 
 </dt>
 <dd>
-  Kill the spawned process after processing current items in queue.
+  Kill the spawned process after processing current items in queue. (bg-proc).
   
 
 </dd>
@@ -308,7 +320,7 @@ the record in your <a href="../parallelism/ParallelizationInterface/processInput
 <footer>
   <span class="no-break">
     parallelism
-      2.0.1-beta
+      2.2.0-beta
   </span>
   
 </footer>

@@ -80,6 +80,81 @@
 </tr>
 </tbody>
 </table>
+<h3 id="usage">Usage</h3>
+<pre class="language-dart"><code class="language-dart">// Example: Generate random length Lorem Ipsum by calling some web API.
+
+// typedef the commonResourceRecord format for ease of understanding.
+typedef RandomClient = (Random, HttpClient);
+
+// Setup: Create and return a Strand.
+Future&lt;RandomClient&gt; setupCommonResources() async {
+  return (
+    // Random number generator.
+    Random(),
+
+    // HTTP Client.
+   HttpClient(),
+  );
+}
+
+// Process Loop: Generate a paragraph of Lorem Ipsum.
+Future&lt;String&gt; generateParagraph(int charCount, Strand commonResources) async {
+  // Destructure the record.
+  var (randomGenerator, httpClient) = commonResources;
+
+  // Do Processing...
+
+  return loremIpsumString;
+}
+
+// Clean Up: Close the HTTP Client.
+Future&lt;void&gt; cleanupStrand(Strand commonResources) async {
+  // Destructure the record.
+  var (randomGenerator, httpClient) = commonResources;
+
+  // Do Cleanup...
+  await httpClient.close();
+}
+
+// Main: Putting it all together.
+void main() async {
+  // Create a new process.
+  var process = await Process.boot(setupCommonResources, generateParagraph, cleanupStrand);
+
+  // Meta Processing.
+  var totalTextLength = 0;
+
+  // We use `Future.then` instead of `await` as `Process.process` is (bg-proc), i.e., there is a
+  // significant difference between the obtaining of the future and the completion of the
+  // future. It is simply more sensible not to stop execution until the `Future` is complete.
+  process.process(25).then((paragraph) {
+    print(paragraph);
+    totalTextLength += paragraph.length;
+  });
+
+  process.process(50).then((paragraph) {
+    print(paragraph);
+    totalTextLength += paragraph.length;
+  });
+
+  process.process(70).then((paragraph) {
+    print(paragraph);
+    totalTextLength += paragraph.length;
+  });
+
+  // Will prevent further calls to `Process.process` and will shutdown the `Process` after
+  // all current inputs have been processed. You don't have to worry about the `Process` exiting
+  // before all inputs have been processed.
+  await process.shutdownOnCompletion();
+
+  // You can also perform actions after all inputs have been processed.
+  // `Process.processingIsComplete` frees you up from tracking each individual input's
+  //  processing status manually.
+  process.processingIsComplete.then((_) {
+    print('Total Text Length: $totalTextLength');
+  });
+}
+</code></pre>
 <h3 id="note">Note</h3>
 <ul>
 <li>
@@ -167,6 +242,18 @@ level of performance and flexibility.</p>
 
 </dd>
 
+        <dt id="processingIsComplete" class="property">
+  <span class="name"><a href="../parallelism/Process/processingIsComplete.html">processingIsComplete</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  Returns <code>null</code> when all processing is completed.
+  <div class="features"><span class="feature">no setter</span><span class="feature">override</span></div>
+
+</dd>
+
         <dt id="processInput" class="property">
   <span class="name"><a href="../parallelism/Process/processInput.html">processInput</a></span>
   <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span> Function<span class="signature">(<span class="parameter" id="param-input"><span class="type-annotation">I</span> <span class="parameter-name">input</span>, </span><span class="parameter" id="param-setupRecord"><span class="type-annotation">CR</span> <span class="parameter-name">setupRecord</span></span>)</span></span>
@@ -251,13 +338,13 @@ level of performance and flexibility.</p>
 
         <dt id="process" class="callable">
   <span class="name"><a href="../parallelism/Process/process.html">process</a></span><span class="signature">(<wbr><span class="parameter" id="process-param-input"><span class="type-annotation">I</span> <span class="parameter-name">input</span></span>)
-    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.7.0/dart-async/Completer-class.html">Completer</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span>&gt;</span></span>
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span>
   </span>
   
 
 </dt>
 <dd>
-  Process the given input in a separate process.
+  Process the given input in a separate process. (bg-proc).
   <div class="features"><span class="feature">override</span></div>
 
 </dd>
@@ -270,7 +357,7 @@ level of performance and flexibility.</p>
 
 </dt>
 <dd>
-  Kill the spawned process immediately.
+  Kill the spawned process immediately. (im-proc).
   <div class="features"><span class="feature">override</span></div>
 
 </dd>
@@ -283,7 +370,7 @@ level of performance and flexibility.</p>
 
 </dt>
 <dd>
-  Kill the spawned process after processing current items in queue.
+  Kill the spawned process after processing current items in queue. (bg-proc).
   <div class="features"><span class="feature">override</span></div>
 
 </dd>
@@ -369,7 +456,7 @@ level of performance and flexibility.</p>
 <footer>
   <span class="no-break">
     parallelism
-      2.0.1-beta
+      2.2.0-beta
   </span>
   
 </footer>
