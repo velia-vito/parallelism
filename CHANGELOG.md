@@ -8,6 +8,6 @@
 
 - Updated Documentation & Examples.
 
-### (parallelism) 2.0.1-beta
+### 2.0.1-beta (parallelism)
 
 - Updated Documentation.

@@ -94,6 +94,11 @@ all downloads (efficient). The common resource record is where you'd store the H
 as <a href="https://dart.dev/language/records">Dart Record</a>. All you would need to do is destructure
 the record in your <a href="../parallelize/ParallelizationInterface/processInput.html">processInput</a> and <a href="../parallelize/ParallelizationInterface/shutdownProcess.html">shutdownProcess</a> methods.</p>
 </li>
+<li>
+<p>The setup, processing, and cleanup methods must complete their <code>Futures</code> only when the setup,
+processing, and cleanup are complete. If you are using <code>Future.then</code> at any given point,
+explicitly return a <code>Completer.future</code> to prevent anomalous behavior.</p>
+</li>
 </ul>
 </section>
 
@@ -143,7 +148,7 @@ the record in your <a href="../parallelize/ParallelizationInterface/processInput
 
 </dt>
 <dd>
-  Returns <code>null</code> when all processing is completed.
+  Returns <code>null</code> when all processing is completed. (bg-proc).
   <div class="features"><span class="feature">no setter</span></div>
 
 </dd>

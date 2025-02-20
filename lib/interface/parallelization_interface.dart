@@ -17,6 +17,10 @@ part of '../parallelize.dart';
 /// - It's called a record because if you require multiple *common resources*, you can store them
 /// as [Dart Record](https://dart.dev/language/records). All you would need to do is destructure
 /// the record in your [processInput] and [shutdownProcess] methods.
+///
+/// - The setup, processing, and cleanup methods must complete their `Futures` only when the setup,
+/// processing, and cleanup are complete. If you are using `Future.then` at any given point,
+/// explicitly return a `Completer.future` to prevent anomalous behavior.
 abstract interface class ParallelizationInterface<I, O, CR> {
   /// Generate common resources required to process individual inputs.
   ///
@@ -36,7 +40,7 @@ abstract interface class ParallelizationInterface<I, O, CR> {
   /// - See Note on [ParallelizationInterface].
   Future<void> Function(CR commonResourceRecord) get shutdownProcess;
 
-  /// Returns `null` when all processing is completed.
+  /// Returns `null` when all processing is completed. (bg-proc).
   Future<void> get processingIsComplete;
 
   /// Process the given input in a separate process. (bg-proc).

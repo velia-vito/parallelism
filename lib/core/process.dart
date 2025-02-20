@@ -16,7 +16,12 @@ part of '../parallelize.dart';
 /// // typedef the commonResourceRecord format for ease of understanding.
 /// typedef RandomClient = (Random, HttpClient);
 ///
-/// // Setup: Create and return a Strand.
+/// // ⚠️ Important: The setup, processing, and cleanup methods must complete
+/// // their `Futures` only when the setup, processing, and cleanup are
+/// // complete. If you are using `Future.then` at any given point, explicitly
+/// // return a `Completer.future` to prevent anomalous behavior.
+///
+/// // Setup: Create and return a RandomClient.
 /// Future<RandomClient> setupCommonResources() async {
 ///   return (
 ///     // Random number generator.
@@ -87,9 +92,6 @@ part of '../parallelize.dart';
 /// ```
 ///
 /// ### Note
-/// - We use [Completer]s to notify the user when an input has been processed, but, if we were to
-/// call [Completer.complete] from a separate [Isolate], it would achieve nothing as each `Isolate`
-/// has its own memory. All data is copied between `Isolates`, not shared.
 ///
 /// - So, internally we maintain a map of [Completer]s against sequential integral ids. When an
 /// input is sent to the `Isolate` for processing, we send the id of it's completer too. When the

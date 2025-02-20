@@ -86,7 +86,12 @@
 // typedef the commonResourceRecord format for ease of understanding.
 typedef RandomClient = (Random, HttpClient);
 
-// Setup: Create and return a Strand.
+// ⚠️ Important: The setup, processing, and cleanup methods must complete
+// their `Futures` only when the setup, processing, and cleanup are
+// complete. If you are using `Future.then` at any given point, explicitly
+// return a `Completer.future` to prevent anomalous behavior.
+
+// Setup: Create and return a RandomClient.
 Future&lt;RandomClient&gt; setupCommonResources() async {
   return (
     // Random number generator.
@@ -157,11 +162,6 @@ void main() async {
 </code></pre>
 <h3 id="note">Note</h3>
 <ul>
-<li>
-<p>We use <a href="https://api.dart.dev/stable/3.7.0/dart-async/Completer-class.html">Completer</a>s to notify the user when an input has been processed, but, if we were to
-call <a href="https://api.dart.dev/stable/3.7.0/dart-async/Completer/complete.html">Completer.complete</a> from a separate <a href="https://api.dart.dev/stable/3.7.0/dart-isolate/Isolate-class.html">Isolate</a>, it would achieve nothing as each <code>Isolate</code>
-has its own memory. All data is copied between <code>Isolates</code>, not shared.</p>
-</li>
 <li>
 <p>So, internally we maintain a map of <a href="https://api.dart.dev/stable/3.7.0/dart-async/Completer-class.html">Completer</a>s against sequential integral ids. When an
 input is sent to the <code>Isolate</code> for processing, we send the id of it's completer too. When the
@@ -249,7 +249,7 @@ level of performance and flexibility.</p>
 
 </dt>
 <dd>
-  Returns <code>null</code> when all processing is completed.
+  Returns <code>null</code> when all processing is completed. (bg-proc).
   <div class="features"><span class="feature">no setter</span><span class="feature">override</span></div>
 
 </dd>
