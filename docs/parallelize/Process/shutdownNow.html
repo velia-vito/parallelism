@@ -81,6 +81,7 @@
 Future&lt;void&gt; shutdownNow() async {
   _isActive = false;
 
+  &#47;&#47; Mass murder.
   _isolate.kill(priority: Isolate.immediate);
   _processingComplete.complete();
 
@@ -114,7 +115,7 @@ Future&lt;void&gt; shutdownNow() async {
 <footer>
   <span class="no-break">
     parallelize
-      1.0.0
+      1.0.1
   </span>
   
 </footer>

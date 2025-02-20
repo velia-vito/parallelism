@@ -63,6 +63,7 @@ library;
 
 // Dart imports:
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'dart:isolate';
 
 part 'interface/parallelization_interface.dart';

@@ -1,7 +1,7 @@
 # Parallelism: Concurrency made simple
 
 ```ps
-dart doc --output doc
+dart doc --output docs
 ```
 
 ⚠️ All relevant documentation is built into the source code, generate docs with dartdoc for

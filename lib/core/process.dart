@@ -144,8 +144,8 @@ class Process<I, O, CR> implements ParallelizationInterface<I, O, CR> {
   @override
   Future<void> get processingIsComplete => _processingComplete.future;
 
-  /// Create a new [Process] instance. Use [Process.boot] to create a new instance.
-  Process(
+  /// Create a new [Process] instance. Use [Process.boot] instead.
+  Process._(
     this.setupProcess,
     this.processInput,
     this.shutdownProcess,
@@ -193,6 +193,7 @@ class Process<I, O, CR> implements ParallelizationInterface<I, O, CR> {
   Future<void> shutdownNow() async {
     _isActive = false;
 
+    // Mass murder.
     _isolate.kill(priority: Isolate.immediate);
     _processingComplete.complete();
 
@@ -203,7 +204,12 @@ class Process<I, O, CR> implements ParallelizationInterface<I, O, CR> {
   @override
   Future<void> shutdownOnCompletion() async {
     _isActive = false;
+
+    // Start winding down.
     _toProcessPort.send(shutdownCode);
+
+    // To ensure that the Future completes only when the _isolate has been shutdown.
+    return processingIsComplete;
   }
 
   /// Create a new Operating System process. Runs on main Process.
@@ -250,7 +256,7 @@ class Process<I, O, CR> implements ParallelizationInterface<I, O, CR> {
     // Hold execution until the connectionLock is released. Update Ports.
     final (fromProcessPort, toProcessPort) = await connectionLock.future;
 
-    return Process(
+    return Process._(
       setupProcess,
       processInput,
       shutdownProcess,

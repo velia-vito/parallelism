@@ -1,6 +1,6 @@
 name: parallelize
 description: (Parallelism Package Update) An optimized Dart package that simplifies parallelization using isolates.
-version: 1.0.0
+version: 1.0.1
 
 repository: https://github.com/shady-ti/parallelism/
 

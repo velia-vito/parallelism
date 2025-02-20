@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the processingIsComplete property from the Process class, for the Dart programming language.">
-  <title>processingIsComplete property - Process class - parallelize library - Dart API</title>
+  <meta name="description" content="API docs for the setupProcess property from the ProcessGroup class, for the Dart programming language.">
+  <title>setupProcess property - ProcessGroup class - parallelize library - Dart API</title>
 
 
   
@@ -26,10 +26,10 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../../index.html">parallelize</a></li>
     <li><a href="../../parallelize">parallelize.dart</a></li>
-    <li><a href="../../parallelize/Process-class.html">Process<span class="signature">&lt;<wbr><span class="type-parameter">I</span>, <span class="type-parameter">O</span>, <span class="type-parameter">CR</span>&gt;</span></a></li>
-    <li class="self-crumb">processingIsComplete property</li>
+    <li><a href="../../parallelize/ProcessGroup-class.html">ProcessGroup<span class="signature">&lt;<wbr><span class="type-parameter">I</span>, <span class="type-parameter">O</span>, <span class="type-parameter">CR</span>&gt;</span></a></li>
+    <li class="self-crumb">setupProcess property</li>
   </ol>
-  <div class="self-name">processingIsComplete</div>
+  <div class="self-name">setupProcess</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -49,45 +49,43 @@
 <div
     id="dartdoc-main-content"
     class="main-content"
-    data-above-sidebar="parallelize&#47;Process-class-sidebar.html"
+    data-above-sidebar="parallelize&#47;ProcessGroup-class-sidebar.html"
     data-below-sidebar="">
     <div>
-<h1><span class="kind-property">processingIsComplete</span> property 
+<h1><span class="kind-property">setupProcess</span> property 
 </h1></div>
 
     
-
-    
+      <section class="multi-line-signature">
         
-  <section id="getter">
-    <section class="multi-line-signature">
-      
   <div>
     <ol class="annotation-list">
         <li>@<a href="https://api.dart.dev/stable/3.7.0/dart-core/override-constant.html">override</a></li>
     </ol>
   </div>
-      <span class="returntype"><a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
-      get
-      <span class="name ">processingIsComplete</span>
-      <div class="features"><span class="feature">override</span></div>
+        <a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">CR</span>&gt;</span> Function<span class="signature">()</span>
+        <span class="name ">setupProcess</span>
+        <div class="features"><span class="feature">final</span></div>
 
-    </section>
-    
+      </section>
+      
 <section class="desc markdown">
-  <p>Returns <code>null</code> when all processing is completed. (bg-proc).</p>
+  <p>Generate common resources required to process individual inputs.</p>
+<h3 id="note">Note</h3>
+<ul>
+<li>See Note on <a href="../../parallelize/ParallelizationInterface-class.html">ParallelizationInterface</a>.</li>
+</ul>
 </section>
 
-    
+      
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
-Future&lt;void&gt; get processingIsComplete =&gt; _processingComplete.future;</code></pre>
+final Future&lt;CR&gt; Function() setupProcess;</code></pre>
 </section>
 
-  </section>
 
-
+    
 </div> <!-- /.main-content -->
 <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
   <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
@@ -99,11 +97,11 @@ Future&lt;void&gt; get processingIsComplete =&gt; _processingComplete.future;</c
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../../index.html">parallelize</a></li>
     <li><a href="../../parallelize">parallelize</a></li>
-    <li><a href="../../parallelize/Process-class.html">Process<span class="signature">&lt;<wbr><span class="type-parameter">I</span>, <span class="type-parameter">O</span>, <span class="type-parameter">CR</span>&gt;</span></a></li>
-    <li class="self-crumb">processingIsComplete property</li>
+    <li><a href="../../parallelize/ProcessGroup-class.html">ProcessGroup<span class="signature">&lt;<wbr><span class="type-parameter">I</span>, <span class="type-parameter">O</span>, <span class="type-parameter">CR</span>&gt;</span></a></li>
+    <li class="self-crumb">setupProcess property</li>
 </ol>
 
-  <h5>Process class</h5>
+  <h5>ProcessGroup class</h5>
   <div id="dartdoc-sidebar-left-content"></div>
 </div><!--/.sidebar-offcanvas-->
 <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
