@@ -1,3 +1,3 @@
-part of '../parallelism.dart';
+part of '../parallelize.dart';
 
 class ProcessGroup {}

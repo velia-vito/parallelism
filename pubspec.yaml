@@ -1,5 +1,5 @@
-name: simple_process
-description: A Dart package that simplifies parallelization using isolates, making it easier to run tasks concurrently and improve performance.
+name: parallelize
+description: (Parallelism Package Update) An optimized Dart package that simplifies parallelization using isolates.
 version: 1.0.0
 
 repository: https://github.com/shady-ti/parallelism/

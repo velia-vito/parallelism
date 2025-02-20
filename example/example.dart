@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:parallelism/parallelism.dart';
+import 'package:parallelize/parallelize.dart';
 
 void main() async {
   var maxCount = Platform.numberOfProcessors;

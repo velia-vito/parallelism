@@ -1,4 +1,4 @@
-part of '../parallelism.dart';
+part of '../parallelize.dart';
 
 // ignore: format-comment, as markdown table.
 /// Parallelization interface where:
