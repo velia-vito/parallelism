@@ -1,22 +1,39 @@
+include: package:lints/recommended.yaml
+
+formatter:
+  page_width: 100
+
 analyzer:
   plugins:
     - dart_code_metrics
 
 linter:
   rules:
-    - public_member_api_docs # ensure complete documentation
-    - package_api_docs
-    - unawaited_futures # prevent errors
-
-    - prefer_interpolation_to_compose_strings # style matters
-    - always_use_package_imports
-    - require_trailing_commas
-    - prefer_single_quotes
+  - prefer_single_quotes
+  - always_declare_return_types
+  - public_member_api_docs
+  - always_put_control_body_on_new_line
+  - await_only_futures
+  - cascade_invocations
+  - combinators_ordering
+  - require_trailing_commas
+  - flutter_style_todos
+  - library_annotations
+  - missing_whitespace_between_adjacent_strings
+  - prefer_foreach
+  - unawaited_futures
+  - unnecessary_breaks
+  - unnecessary_lambdas
+  - unnecessary_parenthesis
+  - use_enums
+  - sort_pub_dependencies
 
 # dart_code_metrics checks (these are based on SIG standards as was found on BetterCodeHub)
 dart_code_metrics:
   rules:
     # General
+    - prefer-commenting-analyzer-ignores:
+        ignore-global: false
     - arguments-ordering
     - avoid-collection-methods-with-unrelated-types
     - avoid-dynamic
@@ -25,10 +42,17 @@ dart_code_metrics:
     - avoid-redundant-async
     - avoid-unnecessary-conditionals
     - double-literal-format
-    
+    - format-comment:
+        ignored-patterns:
+          - ^ {@
+          - ^ \#
+          - ^ ```
+          - ^ <!
     - member-ordering
     - newline-before-return
-    - no-magic-number
+    - no-magic-number:
+        allowed: [360]
+        allow-only-once: true
     - prefer-async-await
     - prefer-commenting-analyzer-ignores
     - prefer-conditional-expressions

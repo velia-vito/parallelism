@@ -8,7 +8,7 @@
             "name": "dart-processors",
             "request": "launch",
             "type": "dart",
-            "program": "bin/main.dart",
+            "program": "${workspaceFolder}/example/example.dart",
         }
     ]
 }

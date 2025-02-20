@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the process method from the Process class, for the Dart programming language.">
-  <title>process method - Process class - parallelism library - Dart API</title>
+  <meta name="description" content="API docs for the processInput property from the Process class, for the Dart programming language.">
+  <title>processInput property - Process class - parallelism library - Dart API</title>
 
 
   
@@ -27,9 +27,9 @@
     <li><a href="../../index.html">parallelism</a></li>
     <li><a href="../../parallelism">parallelism.dart</a></li>
     <li><a href="../../parallelism/Process-class.html">Process<span class="signature">&lt;<wbr><span class="type-parameter">I</span>, <span class="type-parameter">O</span>, <span class="type-parameter">CR</span>&gt;</span></a></li>
-    <li class="self-crumb">process method</li>
+    <li class="self-crumb">processInput property</li>
   </ol>
-  <div class="self-name">process</div>
+  <div class="self-name">processInput</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -52,57 +52,43 @@
     data-above-sidebar="parallelism&#47;Process-class-sidebar.html"
     data-below-sidebar="">
     <div>
-<h1><span class="kind-method">process</span> method 
+<h1><span class="kind-property">processInput</span> property 
 </h1></div>
 
-    <section class="multi-line-signature">
-      
+    
+      <section class="multi-line-signature">
+        
   <div>
     <ol class="annotation-list">
         <li>@<a href="https://api.dart.dev/stable/3.7.0/dart-core/override-constant.html">override</a></li>
     </ol>
   </div>
-<span class="returntype"><a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.7.0/dart-async/Completer-class.html">Completer</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span></span>&gt;</span></span>
-<span class="name ">process</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="process-param-input"><span class="type-annotation">I</span> <span class="parameter-name">input</span></span></li>
-</ol>)
+        <a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">O</span>&gt;</span> Function<span class="signature">(<span class="parameter" id="param-input"><span class="type-annotation">I</span> <span class="parameter-name">input</span>, </span><span class="parameter" id="param-setupRecord"><span class="type-annotation">CR</span> <span class="parameter-name">setupRecord</span></span>)</span>
+        <span class="name ">processInput</span>
+        <div class="features"><span class="feature">final</span></div>
 
-      <div class="features"><span class="feature">override</span></div>
-
-    </section>
-    
+      </section>
+      
 <section class="desc markdown">
-  <p>Process the given input in a separate process.</p>
+  <p>Callback used for processing the input.</p>
+<h3 id="note">Note</h3>
+<ul>
+<li>See Note on <a href="../../parallelism/ParallelizationInterface-class.html">ParallelizationInterface</a>.</li>
+</ul>
 </section>
 
-
-    
+      
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
-Future&lt;Completer&lt;O&gt;&gt; process(I input) async {
-  &#47;&#47; If the process is not active, throw an error.
-  if (!isActive) {
-    throw StateError(
-      &#39;`shutdownOnCompletion` or `shutdownNow` has been called, cannot process new inputs.&#39;,
-    );
-  }
-
-  &#47;&#47; This completer is used to notify a user when the input has been processed.
-  final processingStatusLock = Completer&lt;O&gt;.sync();
-  final id = ++_sequentialId;
-
-  &#47;&#47; Related to the completer system, see Note on `Process`.
-  _unprocessedInputs[id] = processingStatusLock;
-  _toProcessPort.send((id, input));
-
-  return processingStatusLock;
-}</code></pre>
+final Future&lt;O&gt; Function(I input, CR setupRecord) processInput;</code></pre>
 </section>
 
 
-  </div> <!-- /.main-content -->
-  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+    
+</div> <!-- /.main-content -->
+<div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+  <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
 <header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
     <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
@@ -112,13 +98,13 @@ Future&lt;Completer&lt;O&gt;&gt; process(I input) async {
     <li><a href="../../index.html">parallelism</a></li>
     <li><a href="../../parallelism">parallelism</a></li>
     <li><a href="../../parallelism/Process-class.html">Process<span class="signature">&lt;<wbr><span class="type-parameter">I</span>, <span class="type-parameter">O</span>, <span class="type-parameter">CR</span>&gt;</span></a></li>
-    <li class="self-crumb">process method</li>
+    <li class="self-crumb">processInput property</li>
 </ol>
 
-    <h5>Process class</h5>
-    <div id="dartdoc-sidebar-left-content"></div>
-  </div><!--/.sidebar-offcanvas-->
-  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  <h5>Process class</h5>
+  <div id="dartdoc-sidebar-left-content"></div>
+</div><!--/.sidebar-offcanvas-->
+<div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
 </div><!--/.sidebar-offcanvas-->
 </main>
 <footer>

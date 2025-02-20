@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="generator" content="made with love by dartdoc 6.2.2">
   <meta name="description" content="parallelism API docs, for the Dart programming language.">
   <title>parallelism - Dart API docs</title>
 
@@ -12,20 +11,16 @@
   
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
   
   <link rel="stylesheet" href="static-assets/github.css?v1">
   <link rel="stylesheet" href="static-assets/styles.css?v1">
   <link rel="icon" href="static-assets/favicon.png?v1">
-
   
 </head>
 
-
 <body data-base-href="" data-using-base-href="false" class="light-theme">
-
 <div id="overlay-under-drawer"></div>
-
 <header id="title">
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
@@ -35,20 +30,19 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button">
+  <div class="toggle" id="theme-button" title="Toggle brightness">
     <label for="theme">
       <input type="checkbox" id="theme" value="light-theme">
       <span id="dark-theme-button" class="material-symbols-outlined">
-        brightness_4
+        dark_mode
       </span>
       <span id="light-theme-button" class="material-symbols-outlined">
-        brightness_5
+        light_mode
       </span>
     </label>
   </div>
 </header>
 <main>
-
   <div id="dartdoc-main-content" class="main-content">
       
 <section class="desc markdown">
@@ -102,13 +96,13 @@ basically any number of underscores) to handle them</p>
 </li>
 <li>
 <p>Keep file sizes small. Break up large 'design chunks' (eg. color) into smaller
-<a href="https://dart.dev/guides/libraries/create-packages#organizing-a-package:~:text=Packages%20are%20easiest%20to%20maintain,%20extend,%20and%20test%20when%20you%20create%20small,%20individual%20libraries,%20referred%20to%20as%20mini%20libraries">mini-libraries</a>
+<a href="https://dart.dev/guides/libraries/create-packages#organizing-a-package:~:text=Packages%20are%20easiest%20to%20maintain%2C%20extend%2C%20and%20test%20when%20you%20create%20small%2C%20individual%20libraries%2C%20referred%20to%20as%20mini%20libraries">mini-libraries</a>
 (eg. color utils, color palette generation, color theme generation). Mark the mini-libraries
 <code>/// {@nodoc}</code> (case sensitive).</p>
 </li>
 <li>
 <p>Mini-libraries are to be collected into a single library (eg. color.dart) using the
-<a href="https://dart.dev/guides/libraries/create-packages#organizing-a-package:~:text=export%20'src/cascade.dart'%20show%20Cascade;%0Aexport%20'src/handler.dart'%20show%20Handler;%0Aexport%20'src/hijack_exception.dart'%20show%20HijackException;%0Aexport%20'src/middleware.dart'%20show%20Middleware,%20createMiddleware;"><code>export/show</code> directives</a>.</p>
+<a href="https://dart.dev/guides/libraries/create-packages#organizing-a-package:~:text=export%20%27src/cascade.dart%27%20show%20Cascade%3B%0Aexport%20%27src/handler.dart%27%20show%20Handler%3B%0Aexport%20%27src/hijack_exception.dart%27%20show%20HijackException%3B%0Aexport%20%27src/middleware.dart%27%20show%20Middleware%2C%20createMiddleware%3B"><code>export/show</code> directives</a>.</p>
 </li>
 </ul>
 <h2 id="external-resources">External Resources</h2>
@@ -133,59 +127,48 @@ basically any number of underscores) to handle them</p>
           <h2>Libraries</h2>
         <dl>
           <dt id="parallelism">
-  <span class="name"><a href="parallelism/parallelism-library.html">parallelism</a></span> 
+  <span class="name"><a href="parallelism">parallelism</a></span> 
 
 </dt>
-<dd>Parallelism simplified.
+<dd>Stuff.
 </dd>
 
         </dl>
       </section>
-
   </div> <!-- /.main-content -->
-
   <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
-    <header id="header-search-sidebar" class="hidden-l">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
   <form class="search-sidebar" role="search">
     <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
 </header>
-
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
-  <li class="self-crumb">parallelism package</li>
+    <li class="self-crumb">parallelism package</li>
 </ol>
-
 
     <h5 class="hidden-xs"><span class="package-name">parallelism</span> <span class="package-kind">package</span></h5>
     <ol>
       <li class="section-title">Libraries</li>
-      <li><a href="parallelism/parallelism-library.html">parallelism</a></li>
+      <li><a href="parallelism">parallelism</a></li>
 </ol>
 
   </div>
-
   <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
   </div>
-
 </main>
-
 <footer>
   <span class="no-break">
     parallelism
-      2.0.0-pre.1
+      2.0.1-beta
   </span>
-
   
 </footer>
-
 
 
 <script src="static-assets/highlight.pack.js?v1"></script>
 <script src="static-assets/docs.dart.js"></script>
 
-
-
 </body>
-
 </html>
 
