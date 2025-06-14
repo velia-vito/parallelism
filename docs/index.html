@@ -30,17 +30,14 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
   <div id="dartdoc-main-content" class="main-content">
@@ -51,48 +48,74 @@
 </code></pre>
 <p>⚠️ All relevant documentation is built into the source code, generate docs with dartdoc for
 comprehensive documentation. Or, view the documentation online on this repo's Github Pages.</p>
-<h2 id="code-conventions">Code Conventions</h2>
+<h2 id="documentation-conventions">Documentation Conventions</h2>
+<ol>
+<li>
+<p>All documentation goes in the dart documentation comments.</p>
+</li>
+<li>
+<p>Library level documentation must provide an overview explanation of how it's constituent
+classes/methods work. <strong><em>All of them.</em></strong> This is primarily aimed at future developers, not package
+users.</p>
+<p>Also note the following in Library level documentation:</p>
 <ul>
 <li>
-<p>Library level design &amp; developers documentation—an explanation of why things ended up the way they
-are. Code conventions and comparative outlines of feature sets and other technical details are
-added here too. Design considerations first and developer considerations next.</p>
+<p>Necessary background knowledge (explanation or links.)</p>
+</li>
+<li>
+<p>Design Rationale behind major design choices.</p>
+</li>
+<li>
+<p>Naming Conventions, so consistency is maintained over all modifications.</p>
+</li>
+<li>
+<p>Comparative outlines of similar classes with different purposes/performance considerations.</p>
+</li>
+<li>
+<p>Other Misc Technical details of note.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Class documentation should include a usage example. Keep the example under 10 lines.</p>
 </li>
 <li>
 <p>Documentation for all public interfaces. Use this format:</p>
 <pre class="language-markdown"><code class="language-markdown">One line description of what the method/class/thing does
-
-### Args &lt;!-- Add this sections if any of the argument names are open to interpretation --&gt;
-- `argName`: Description of what this argument is.
-
+   
+&lt;!-- Add only if the arguments aren't self-descriptive --&gt;
+&lt;!-- Add for all generics --&gt;
+| Args / Generics | Description  |
+| --------------- | ------------ |
+| `argumentName`  | What it does |
+ 
 ### Exceptions &lt;!-- Add this section if there are uncaught Exceptions/Errors --&gt;
 - `ExceptionName`: Cause(s) for this exception.
-
+ 
 ### Note &lt;!-- Add this section where you want to highlight something specific --&gt;
 - Bullet point everything except the one line description.
-
+ 
 - You can highlight anything from the a quirk of the internal logic of this function to a random
 fact related to this function
 </code></pre>
 </li>
-<li>
-<p>Use descriptive variable names.</p>
-</li>
+</ol>
+<h3 id="developer-concerns">Developer Concerns</h3>
+<ol>
 <li>
 <p>Don't ignore return values even if you are not using them, use dummy variables (<code>_</code>, <code>__</code>,
-basically any number of underscores) to handle them</p>
+  basically any number of underscores) to handle them</p>
 </li>
 <li>
 <p>Keep file sizes small. Break up large 'design chunks' (eg. color) into smaller
 <a href="https://dart.dev/guides/libraries/create-packages#organizing-a-package:~:text=Packages%20are%20easiest%20to%20maintain%2C%20extend%2C%20and%20test%20when%20you%20create%20small%2C%20individual%20libraries%2C%20referred%20to%20as%20mini%20libraries">mini-libraries</a>
-(eg. color utils, color palette generation, color theme generation). Mark the mini-libraries
-<code>/// {@nodoc}</code> (case sensitive).</p>
+  (eg. color utils, color palette generation, color theme generation).</p>
 </li>
 <li>
 <p>Mini-libraries are to be collected into a single library (eg. color.dart) using the
 <a href="https://dart.dev/guides/libraries/create-packages#organizing-a-package:~:text=export%20%27src/cascade.dart%27%20show%20Cascade%3B%0Aexport%20%27src/handler.dart%27%20show%20Handler%3B%0Aexport%20%27src/hijack_exception.dart%27%20show%20HijackException%3B%0Aexport%20%27src/middleware.dart%27%20show%20Middleware%2C%20createMiddleware%3B"><code>export/show</code> directives</a>.</p>
 </li>
-</ul>
+</ol>
 <h2 id="external-resources">External Resources</h2>
 <ul>
 <li>
@@ -115,10 +138,10 @@ basically any number of underscores) to handle them</p>
           <h2>Libraries</h2>
         <dl>
           <dt id="parallelize">
-  <span class="name"><a href="parallelize">parallelize</a></span> 
+  <span class="name"><a href="parallelize/">parallelize</a></span> 
 
 </dt>
-<dd>Run Code in parallel without having to worry about low-level <a href="https://api.dart.dev/stable/3.7.0/dart-isolate/Isolate-class.html">Isolate</a> details.
+<dd>Run Code in parallel without having to worry about low-level <a href="https://api.dart.dev/stable/3.8.1/dart-isolate/Isolate-class.html">Isolate</a> details.
 </dd>
 
         </dl>
@@ -138,7 +161,7 @@ basically any number of underscores) to handle them</p>
     <h5 class="hidden-xs"><span class="package-name">parallelize</span> <span class="package-kind">package</span></h5>
     <ol>
       <li class="section-title">Libraries</li>
-      <li><a href="parallelize">parallelize</a></li>
+      <li><a href="parallelize/">parallelize</a></li>
 </ol>
 
   </div>

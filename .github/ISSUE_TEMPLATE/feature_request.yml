@@ -1,0 +1,51 @@
+name: 💡 Enhancement Proposal
+
+description: Got an idea? Let me know!
+
+title: "[Enhancement]: PROVIDE_DESCRIPTIVE_TITLE_HERE"
+
+labels: ["enhancement"]
+
+# assignees:
+#   - velia-vito
+
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Enhancement Type
+      description: What type of enhancement are you proposing?
+      options:
+        - Widget (A new widget)
+        - Behavior (A change in widget behavior or interactions)
+        - Feature (A new capability)
+        - Documentation (A reduction/increase in documentation)
+    validations:
+      required: true
+  
+  - type: textarea
+    id: desc
+    attributes:
+      label: Description
+      description: What is the enhancement you're proposing? What problem does it solve?
+      placeholder: |
+        I'd like to propose a new widget that . . .
+
+        It helps users by . . .
+    validations:
+      required: true
+
+  - type: textarea
+    id: misc
+    attributes:
+      label: Further Details
+      description: Any other details you'd like to share?
+
+  
+  - type: checkboxes
+    id: work_interest
+    attributes:
+      label: Interest in contribution
+      options:
+        - label: I am willing to work on this enhancement proposal.
+

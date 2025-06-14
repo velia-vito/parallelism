@@ -31,17 +31,14 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -63,60 +60,138 @@
 
     
 <section class="desc markdown">
-  <p>Run Code in parallel without having to worry about low-level <a href="https://api.dart.dev/stable/3.7.0/dart-isolate/Isolate-class.html">Isolate</a> details.</p>
-<h2 id="overview">Overview</h2>
-<p>The library is built around <a href="../parallelize/ParallelizationInterface-class.html">ParallelizationInterface</a>, the most fundamental implementation of
-which is the <a href="../parallelize/Process-class.html">Process</a> class. Both the <a href="../parallelize/ProcessGroup-class.html">ProcessGroup</a> and <a href="../parallelize/ProcessWorkflow-class.html">ProcessWorkflow</a> classes are simply
-utility wrappers around the <code>Process</code> class.</p>
-<h3 id="conceptual-notes">Conceptual Notes</h3>
-<ol>
-<li>
-<p><code>Processing Loop</code>: A <code>Process</code> runs a single callback, <a href="../parallelize/Process/processInput.html">Process.processInput</a> every time it
-is presented with a fresh input. This is the <em>Processing Loop</em> (called as such because the same
-method is called back repeatedly for each input).</p>
-</li>
-<li>
-<p><code>Setup</code>: Let's say you're running a process to download multiple files in
-parallel to the main isolate. You have two options: (a) create a new HTTP client for each file
-download (inefficient due to overhead), or (b) create a single HTTP client and reuse it for all
-file downloads (much more efficient). The <code>Processing Loop</code> is not capable of variable
-persistence, so, such persistent variables have to be created outside of the <code>Processing Loop</code>.
-This is done before the <code>Processing Loop</code> starts by the <a href="../parallelize/Process/setupProcess.html">Process.setupProcess</a> callback.</p>
-</li>
-<li>
-<p><code>Common Resource Record</code>: Let's say that your <code>Processing Loop</code> requires multiple common
-resources. Unlike Python, Dart doesn't allow arbitrary length arguments. So, how do you pass
-such a variable length list of common resources while maintaining type safety? We do so by
-bundling all common resources into a single <a href="https://dart.dev/language/records">Record</a>. As you
-are aware of the Record's structure, you can easily destructure it to access individual <code>Common Resources</code> within the <code>Processing Loop</code> and the subsequent <code>Clean Up</code>.</p>
-</li>
-<li>
-<p><code>Clean Up</code>: After the <code>Processing Loop</code> has completed, the <code>Common Resources</code> need to be
-cleaned up to allow proper termination of the application and to prevent other unexpected
-behaviors. This is done by the <a href="../parallelize/Process/shutdownProcess.html">Process.shutdownProcess</a> callback.</p>
-</li>
-<li>
-<p>The overall functioning of any implementation of <code>ParallelizationInterface</code> is as follows:
-<code>Create Common Resources</code> -&gt; <code>Process Input</code> (repeatedly) -&gt; <code>Clean Up</code> -&gt; <code>TerminateProcess</code>.</p>
-</li>
-<li>
-<p><code>Future</code>: A <a href="https://api.dart.dev/stable/3.7.0/dart-core/Future-class.html">Future</a> is a <em>promise</em> of a value. It is important to understand that a <code>Future</code>
-is not the value itself, but a <em>promise</em> to deliver the value at some point in the future.</p>
-</li>
-<li>
-<p><code>Future Completion</code>: When a <code>Future</code> upholds its promise and delivers the value, we call this
-<em>delivering of the value</em> as <code>Future Completion</code>. The important part is that a <code>Future</code> may
-<em>complete</em> almost immediately as if it were a synchronous function, or it may take a significant
-amount of time to <em>complete</em>.</p>
-</li>
-<li>
-<p><code>Future.then</code> vs <code>await</code>: <code>await</code> is best used when the value of a future is absolutely
-required for the next step in the program, or when you're using the completion of a future as
-a <em>lock</em> to prevent further execution until some condition is met. <code>Future.then</code> is best used
-when you want to perform some action after the completion of a <code>Future</code> that displays
-significant delay before completion.</p>
-</li>
-</ol>
+  <p>Run Code in parallel without having to worry about low-level <a href="https://api.dart.dev/stable/3.8.1/dart-isolate/Isolate-class.html">Isolate</a> details.</p>
+<h2 id="background">Background</h2>
+<h3 id="multi-threading-vs-multi-processing">Multi-threading vs. Multi-processing</h3>
+<p>Imagine your code as one long string, this string has knots on it that you have to untangle,
+you have to paint the untangled sections red. The string is your logic-flow, and the knots are
+things you have to wait for (e.g a network request or reading a file from your OS or waiting for
+a specified amount of time,) and the painting the untangled string is further processing after
+the waiting for data.</p>
+<p>In single-threaded processing, you move down the thread till the first knot, stop till your
+friend untangles it, you paint it, then you move till the next knot, wait for your friend to
+untangle it, then you paint it and so on. You spend a significant amount of time waiting.</p>
+<p>In multi-threading, you move down to the first knot, hand it off to your friend and instead of
+waiting, you move on down to the next knot, pass it to your friend (irrespective of weather he
+has untangled the first one or not) and continue moving down the string and handing off new
+knots. When  your friend untangles the first knot,  you pause your hunt for the next knot, and
+go paint the freshly returned untangled section while he untangles the next knot you sent him.
+You go back to finding the next knot till he's done with the second knot. Here a good chunk of
+the waiting time from your earlier single-threaded system is actually utilized doing searching
+for the next knot instead of simply idling. More work is getting done in lesser time. The more
+waiting time your single-threaded process takes, the more time multi-threading will save.</p>
+<p>In parallel process, it's not just you working on a single string while waiting for your friend
+to untangle knots. You either have 16 people and their friends working on 16 different strings
+or you have 16 people and their friends working on 16 different sections of the same string
+<em><em>all at same time</em></em> i.e you're doing 16x the work in the same time, or the same work in 1/16th
+of the time. THe key part is that there are 16 people and their friends here.</p>
+<p>If multi-threading is about reducing wait times. Multi-processing is about increasing the number
+of workers. It's not optimizing, it's brute-forcing.</p>
+<h3 id="isolates-101">Isolates 101</h3>
+<p>Most low level languages and quiet a few high level languages have multi-processing
+capabilities, but how it works in Dart and other languages have one major difference.</p>
+<p>In other languages, each separate process (each worker) has a shared context i.e resources are
+shared like different artisans in a workshop with only one CNC Machine or 3D Printer. If an
+artisan need to use the 3D printer but but someone else has already started printing a part. He
+will either have to wait, cancel the other printing task, or his attempts to print his part
+before the other person's printing task is done and will mess up both peoples work. To prevent
+the last situation (which usually means memory overruns, corrupted data, and <a href="https://en.wikipedia.org/wiki/Race_condition">data race
+conditions</a>,) you need to implement a <em>global
+lock</em> that ensure that only one process can access those shared resources at any given time.
+This is both finicky and and a pain in the ass.</p>
+<p>In dart, there are no shared resources. If you create an object that takes up a lot of memory
+and you need all your processes to have access to it, you either create a dozen copies of it an
+fill up the OS memory, or you create some other alternative way to access just the relevant
+parts of the data without loading the whole thing into memory. Same goes for computationally
+heavy to create objects, like say, a hash map.</p>
+<p>But, on the flip side, you don't have to worry about a <em>global lock</em>, race conditions that
+permanently brick your program, or unexplained crashes. This also means that individual
+processes do not have to wait on resources. It's a much more robust and efficient system if more
+resource heavy. So, keep that in mind when you write code for prallelization.</p>
+<h3 id="futures-are-not-deferred-data">Futures are not deferred data</h3>
+<p>When you get  get a <a href="https://api.dart.dev/stable/3.8.1/dart-core/Future-class.html">Future</a> object, you're not getting a container that will be filled with
+data later. You're getting a <em>promise</em> that the data will be available at some point in the
+future. A future "completes" when the promise is upheld and the data is either sent for further
+processing (when you use <a href="https://api.dart.dev/stable/3.8.1/dart-core/Future/then.html">Future.then</a>) or when you <code>await</code>.</p>
+<p>This means that you really need to know what promise any returned future represents. For
+example, if you write a <code>Future&lt;void&gt; sendTenRequests()</code> function that sends 10 network requests
+(with no custom <a href="https://api.dart.dev/stable/3.8.1/dart-async/Completer-class.html">Completer</a>), the default returned future from the function will complete when
+the 10 requests are sent, and because the requests are part of the local scope, you now have not
+way to wait till the sever responds to the requests outside of the function. The person calling
+this function may not be aware of the difference and assume that awaiting <code>sendTenRequests</code> will
+ensure that the server has responded to all 10 requests, which is not the case.</p>
+<h3 id="microtasks-vs-events">Microtasks vs. Events</h3>
+<p>Your program is split into <em>Events</em> (or tasks, which ever you want to call them) — chunks of
+code to be executed on particular triggers. Even a "purely sequential" program can be split up
+into tasks that require waiting in between. Consider the simple task of writing data to console,
+ this requires waiting for your OS to provide you  access to the output sink, and hence the
+logic before would be split into one event and the logic after into a separate event triggered
+by obtaining access to the standard output sink.</p>
+<p>The very first task on the "Event Queue" is to start the execution of the <code>main</code> function. This
+event queue is sequential, but some tasks are extremely important and have to be handled on a
+high priority basis. Dart uses a separate first-in-first-out event queue called the "Microtask
+Queue".</p>
+<p>Events on the microtask queue are given greater priority than events in the event queue i.e the
+event queue processing is always put on hold until the microtask queue is empty.</p>
+<p>When you run an async function with <a href="https://api.dart.dev/stable/3.8.1/dart-core/Future/then.html">Future.then</a> to handle the returned value, the callback in
+internally registered within the Future, and whenever the future completes, the callback is
+added to the microtask queue. What this means is that there is a gap between triggering the
+future and the callback being added to the microtask queue. A gap during which the program may
+exit. On using <code>await</code>, much the same happens, but the rest of the logic after the <code>await</code> is
+registered as the callback and added to the microtask queue.</p>
+<p>Why is this important? One, avoid using <code>await</code> as much as possible. The point of
+multi-threading is to reduce waiting time, and <code>await</code> adding all the subsequent logic to the
+microtask queue means that the program will simply stop and wait for a response before doing the
+rest of the logic. It will still save you time if you're doing separate tasks (e.g downloading a
+file and writing a completely different file to disk,) but otherwise it might as well be purely
+sequential. Using <code>Future.then</code> is better as it only adds the callback to the microtask queue
+and continues program execution. While there is much to gain from using <code>then</code> it requires you
+to be aware of what exactly is being tracked by the returned future i.e as long as you ensure
+that the future <em>completes</em>, you can be assured that the post-processing will be done.</p>
+<p>Example pf the differences in <code>await</code> vs. <code>then</code> can be seen at
+<a href="https://github.com/velia-vito/utils/blob/main/bin/avtfuture.dart">avtfuture.dart</a>) with some
+minimal explanation.</p>
+<h2 id="design-overview">Design Overview</h2>
+<p>Isolates are basically separate programs that run in parallel to the main program due to the
+lack of a shared context. This, coupled with the process for creation of a new isolate means
+that you can essentially think of it as one big function that run on a different processor.</p>
+<p>This means that something like creating a persistent HTTP client for downloading multiple files
+whose links will be provided at different points in time is not possible. You'd simply create
+a new HTTP client for each "call" to the isolate, which is inefficient.</p>
+<p>This is handled internally by the library. A custom loop is created for the main function:
+<code>setupProcess</code> -&gt; <code>processInput</code> (repeatedly) -&gt; <code>shutdownProcess</code>. The logic is in the users
+control, and they are the ones who code all three callbacks, but the actual code run in the
+isolate is pre-defined in the library.</p>
+<h3 id="processsetupprocess--cr"><a href="../parallelize/Process/setupProcess.html">Process.setupProcess</a> &amp; <code>CR</code></h3>
+<p>Used to create any persistent objects/resources that will be reused across all processing done
+within the isolate. Since Dart doesn't support arbitrary length arguments, all generated
+resources need to be bundled into a single <a href="https://dart.dev/language/records">Record</a>. This
+record is generically typed as <code>CR</code> for <em>Common Resources</em>.</p>
+<pre class="language-dart"><code class="language-dart">// Creating a "record" with field names.
+(int id, String name, HttpClient client) commonResources = (10, 'Example', httpClient);
+</code></pre>
+<h3 id="processprocessinput"><a href="../parallelize/Process/processInput.html">Process.processInput</a></h3>
+<p>Take an input &amp; the common resources, process the input and return a result. The library
+automatically handles the passing of the output back to the main isolate. This usually requires
+unpacking of the <code>CR</code> record.</p>
+<pre class="language-dart"><code class="language-dart">// Full unpacking of a record.
+var (id, name, client) = commonResources;
+
+// field access of a record.
+var client = commonResources.client;
+</code></pre>
+<h3 id="processshutdownprocess"><a href="../parallelize/Process/shutdownProcess.html">Process.shutdownProcess</a></h3>
+<p>Takes the Common Resources and cleans them up if necessary.</p>
+<h3 id="processprocessingiscomplete"><a href="../parallelize/Process/processingIsComplete.html">Process.processingIsComplete</a></h3>
+<p>Both are internal <a href="https://api.dart.dev/stable/3.8.1/dart-async/Completer-class.html">Completer</a> that only completes when all the sent inputs have been processed.
+This is done by assigning a <code>inputID</code> to each input, and then logging the input under
+"unprocessed inputs". When the isolate finishes processing the input, it send back the output
+with the related <code>inputID</code>. We need to do this as there is no shared context for the isolate to
+update the main isolate about the progress of anything.</p>
+<p>When a call is made to <a href="../parallelize/Process/shutdownOnCompletion.html">Process.shutdownOnCompletion</a>, the isolate is marked as "close for new
+inputs" (or inactive)., the <code>processingIsComplete</code> future completes only when all inputs in the
+"unprocessed inputs" list have been processed and the isolate is closed for further inputs. It
+essentially tracks overall completion of all futures, so that the user does't have to.</p>
 <h3 id="misc-notes">Misc Notes</h3>
 <ul>
 <li>
@@ -128,7 +203,7 @@ significant delay before completion.</p>
 <li>
 <p><code>(bg-proc)</code>: Background Process. Indicates that there is a significant delay between the
 method returning a <code>Future</code> and the <code>Future</code> completing. These methods are best handles with
-<a href="https://api.dart.dev/stable/3.7.0/dart-core/Future/then.html">Future.then</a>.</p>
+<a href="https://api.dart.dev/stable/3.8.1/dart-core/Future/then.html">Future.then</a>.</p>
 </li>
 <li>
 <p><code>(im-proc)</code>: Immediate Process. Indicates that the <code>Future</code> will complete almost immediately
@@ -202,7 +277,7 @@ after it is returned. These methods are best handled with <code>await</code>.</p
     <h5><span class="package-name">parallelize</span> <span class="package-kind">package</span></h5>
     <ol>
       <li class="section-title">Libraries</li>
-      <li><a href="../parallelize">parallelize</a></li>
+      <li><a href="../parallelize/">parallelize</a></li>
 </ol>
 
   </div>

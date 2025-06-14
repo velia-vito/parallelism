@@ -1,0 +1,60 @@
+name: 🪲 Bug Report
+
+description: Found a potential bug? Let me know!
+
+title: "[Bug]: PROVIDE_DESCRIPTIVE_TITLE_HERE"
+
+labels: ["bug"]
+
+# assignees:
+#   - velia-vito
+
+body:
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: What operating system did you encounter this bug on?
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - iOS
+        - Android
+        - Web
+    validations:
+      required: true
+  
+  - type: input
+    id: version
+    attributes:
+      label: Implementation Version
+      description: What is the version number or commit hash of the implementation you're using?
+      placeholder: v0.9.2-alpha.3+15jun24, etc . . .
+    validations:
+      required: true
+
+  - type: textarea
+    id: desc_proof
+    attributes:
+      label: Steps to reproduce (and proof)
+      description: How do we recreate the bug you encountered? Can you provide a screenshot or video of the bug?
+      placeholder: |
+        1. Create a date picker inside of a container with `overflow: hidden`
+        2. Open the date picker
+        3. . . .
+    validations:
+      required: true
+
+  - type: textarea
+    id: misc
+    attributes:
+      label: Further Details
+      description: Any other details you'd like to share? Any causes you suspect? Anything at all?
+
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Information
+      description: How can we reach out to you for more information?
+      placeholder: example.username_bunny67969 (Discord) / username@example.com (Email) / etc . . .
