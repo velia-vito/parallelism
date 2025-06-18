@@ -2,107 +2,42 @@ part of '../parallelize.dart';
 
 // ignore: format-comment, as markdown table.
 /// Creates a new *process* and runs your code in parallel.
+/// 
+/// ### Args
 ///
 /// | Generic | Description                                                   |
 /// |:-------:|:------------------------------------------------------------- |
 /// |   `I`   | Input Type                                                    |
 /// |   `O`   | Output Type                                                   |
 /// |  `CR`   | Common Resource (see [ParallelizationInterface] Note)         |
-///
-/// ### Usage
-/// ```dart
-/// // Example: Generate random length Lorem Ipsum by calling some web API.
-///
-/// // typedef the commonResourceRecord format for ease of understanding.
-/// typedef RandomClient = (Random, HttpClient);
-///
-/// // ⚠️ Important: The setup, processing, and cleanup methods must complete
-/// // their `Futures` only when the setup, processing, and cleanup are
-/// // complete. If you are using `Future.then` at any given point, explicitly
-/// // return a `Completer.future` to prevent anomalous behavior.
-///
-/// // Setup: Create and return a RandomClient.
-/// Future<RandomClient> setupCommonResources() async {
-///   return (
-///     // Random number generator.
-///     Random(),
-///
-///     // HTTP Client.
-///    HttpClient(),
-///   );
-/// }
-///
-/// // Process Loop: Generate a paragraph of Lorem Ipsum.
-/// Future<String> generateParagraph(int charCount, Strand commonResources) async {
-///   // Destructure the record.
-///   var (randomGenerator, httpClient) = commonResources;
-///
-///   // Do Processing...
-///
-///   return loremIpsumString;
-/// }
-///
-/// // Clean Up: Close the HTTP Client.
-/// Future<void> cleanupStrand(Strand commonResources) async {
-///   // Destructure the record.
-///   var (randomGenerator, httpClient) = commonResources;
-///
-///   // Do Cleanup...
-///   await httpClient.close();
-/// }
-///
-/// // Main: Putting it all together.
-/// void main() async {
-///   // Create a new process.
-///   var process = await Process.boot(setupCommonResources, generateParagraph, cleanupStrand);
-///
-///   // Meta Processing.
-///   var totalTextLength = 0;
-///
-///   // We use `Future.then` instead of `await` as `Process.process` is (bg-proc), i.e., there is a
-///   // significant difference between the obtaining of the future and the completion of the
-///   // future. It is simply more sensible not to stop execution until the `Future` is complete.
-///   process.process(25).then((paragraph) {
-///     print(paragraph);
-///     totalTextLength += paragraph.length;
-///   });
-///
-///   process.process(50).then((paragraph) {
-///     print(paragraph);
-///     totalTextLength += paragraph.length;
-///   });
-///
-///   process.process(70).then((paragraph) {
-///     print(paragraph);
-///     totalTextLength += paragraph.length;
-///   });
-///
-///   // Will prevent further calls to `Process.process` and will shutdown the `Process` after
-///   // all current inputs have been processed. You don't have to worry about the `Process` exiting
-///   // before all inputs have been processed.
-///   await process.shutdownOnCompletion();
-///
-///   // You can also perform actions after all inputs have been processed.
-///   // `Process.processingIsComplete` frees you up from tracking each individual input's
-///   //  processing status manually.
-///   process.processingIsComplete.then((_) {
-///     print('Total Text Length: $totalTextLength');
-///   });
-/// }
-/// ```
-///
+/// 
 /// ### Note
+/// - Things like creating a HttpClient takes quiet a bit of time, so closing/reopening it each
+/// input is a bad idea. So, instead you create a common resource record in the [setupProcess]
+/// to bundle such high-cost setup operations. The output will be passed to all calls of
+/// [processInput].
 ///
-/// - So, internally we maintain a map of [Completer]s against sequential integral ids. When an
-/// input is sent to the `Isolate` for processing, we send the id of it's completer too. When the
-/// `Isolate` is done processing, it sends the id back with the output. This way, we can *complete*
-/// the correct `Completer` for each input.
+///   ```dart
+///   // Generate high-cost resources like HttpClient.
+/// 
+///   // Creating a "record" with field names.
+///   var commonResources = (id: 10, name: 'Example', client: httpClient);
+///   ```
 ///
-/// - Again, when the inputs are being sent sequentially, won't the outputs also be received
-/// sequentially? Not necessarily, the [processInput] method is asynchronous, so it's completely
-/// possible that one inputs processing is on hold while the next input is being processed. We're
-/// combining parallel processing with async processing to afford a user the best possible
-/// level of performance and flexibility.
+/// - You destructure the record in [processInput] to access the high-cost resources while
+/// processing inputs.
+///
+///   ```dart
+///   // Full unpacking of a record.
+///   var (id, name, client) = commonResourceRecord;
+/// 
+///   // field access of a record.
+///   var client = commonResourceRecord.client;
+/// 
+///   // Do Processing
+///   ```
+/// 
+/// - The [shutdownProcess] is used to clean up resources after processing is done.
 class Process<I, O, CR> implements ParallelizationInterface<I, O, CR> {
   /// Shutdown code for the spawned Isolate.
   final String shutdownCode;

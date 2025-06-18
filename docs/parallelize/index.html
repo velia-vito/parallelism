@@ -168,7 +168,7 @@ within the isolate. Since Dart doesn't support arbitrary length arguments, all g
 resources need to be bundled into a single <a href="https://dart.dev/language/records">Record</a>. This
 record is generically typed as <code>CR</code> for <em>Common Resources</em>.</p>
 <pre class="language-dart"><code class="language-dart">// Creating a "record" with field names.
-(int id, String name, HttpClient client) commonResources = (10, 'Example', httpClient);
+var commonResources = (id: 10, name: 'Example', client: httpClient);
 </code></pre>
 <h3 id="processprocessinput"><a href="../parallelize/Process/processInput.html">Process.processInput</a></h3>
 <p>Take an input &amp; the common resources, process the input and return a result. The library
@@ -194,23 +194,7 @@ inputs" (or inactive)., the <code>processingIsComplete</code> future completes o
 essentially tracks overall completion of all futures, so that the user does't have to.</p>
 <h3 id="misc-notes">Misc Notes</h3>
 <ul>
-<li>
-<p>The words <code>Process</code> and <code>Isolate</code> are used interchangeably in this library.</p>
-</li>
-<li>
-<p>All async methods will be marked as follows:</p>
-<ul>
-<li>
-<p><code>(bg-proc)</code>: Background Process. Indicates that there is a significant delay between the
-method returning a <code>Future</code> and the <code>Future</code> completing. These methods are best handles with
-<a href="https://api.dart.dev/stable/3.8.1/dart-core/Future/then.html">Future.then</a>.</p>
-</li>
-<li>
-<p><code>(im-proc)</code>: Immediate Process. Indicates that the <code>Future</code> will complete almost immediately
-after it is returned. These methods are best handled with <code>await</code>.</p>
-</li>
-</ul>
-</li>
+<li>The words <code>Process</code> and <code>Isolate</code> are used interchangeably in this library.</li>
 </ul>
 </section>
 
@@ -223,7 +207,7 @@ after it is returned. These methods are best handled with <code>await</code>.</p
 
 </dt>
 <dd>
-  Parallelization interface where:
+  General interface for all parallelization implementations.
 </dd>
 
           <dt id="Process">
@@ -239,7 +223,8 @@ after it is returned. These methods are best handled with <code>await</code>.</p
 
 </dt>
 <dd>
-  
+  Spawn multiple processes and automatically distribute the workload among them. Utility class –
+wrapper around <a href="../parallelize/Process-class.html">Process</a>.
 </dd>
 
           <dt id="ProcessWorkflow">

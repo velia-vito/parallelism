@@ -55,6 +55,7 @@
     
 <section class="desc markdown">
   <p>Creates a new <em>process</em> and runs your code in parallel.</p>
+<h3 id="args">Args</h3>
 <table>
 <thead>
 <tr>
@@ -77,100 +78,33 @@
 </tr>
 </tbody>
 </table>
-<h3 id="usage">Usage</h3>
-<pre class="language-dart"><code class="language-dart">// Example: Generate random length Lorem Ipsum by calling some web API.
-
-// typedef the commonResourceRecord format for ease of understanding.
-typedef RandomClient = (Random, HttpClient);
-
-// ⚠️ Important: The setup, processing, and cleanup methods must complete
-// their `Futures` only when the setup, processing, and cleanup are
-// complete. If you are using `Future.then` at any given point, explicitly
-// return a `Completer.future` to prevent anomalous behavior.
-
-// Setup: Create and return a RandomClient.
-Future&lt;RandomClient&gt; setupCommonResources() async {
-  return (
-    // Random number generator.
-    Random(),
-
-    // HTTP Client.
-   HttpClient(),
-  );
-}
-
-// Process Loop: Generate a paragraph of Lorem Ipsum.
-Future&lt;String&gt; generateParagraph(int charCount, Strand commonResources) async {
-  // Destructure the record.
-  var (randomGenerator, httpClient) = commonResources;
-
-  // Do Processing...
-
-  return loremIpsumString;
-}
-
-// Clean Up: Close the HTTP Client.
-Future&lt;void&gt; cleanupStrand(Strand commonResources) async {
-  // Destructure the record.
-  var (randomGenerator, httpClient) = commonResources;
-
-  // Do Cleanup...
-  await httpClient.close();
-}
-
-// Main: Putting it all together.
-void main() async {
-  // Create a new process.
-  var process = await Process.boot(setupCommonResources, generateParagraph, cleanupStrand);
-
-  // Meta Processing.
-  var totalTextLength = 0;
-
-  // We use `Future.then` instead of `await` as `Process.process` is (bg-proc), i.e., there is a
-  // significant difference between the obtaining of the future and the completion of the
-  // future. It is simply more sensible not to stop execution until the `Future` is complete.
-  process.process(25).then((paragraph) {
-    print(paragraph);
-    totalTextLength += paragraph.length;
-  });
-
-  process.process(50).then((paragraph) {
-    print(paragraph);
-    totalTextLength += paragraph.length;
-  });
-
-  process.process(70).then((paragraph) {
-    print(paragraph);
-    totalTextLength += paragraph.length;
-  });
-
-  // Will prevent further calls to `Process.process` and will shutdown the `Process` after
-  // all current inputs have been processed. You don't have to worry about the `Process` exiting
-  // before all inputs have been processed.
-  await process.shutdownOnCompletion();
-
-  // You can also perform actions after all inputs have been processed.
-  // `Process.processingIsComplete` frees you up from tracking each individual input's
-  //  processing status manually.
-  process.processingIsComplete.then((_) {
-    print('Total Text Length: $totalTextLength');
-  });
-}
-</code></pre>
 <h3 id="note">Note</h3>
 <ul>
 <li>
-<p>So, internally we maintain a map of <a href="https://api.dart.dev/stable/3.8.1/dart-async/Completer-class.html">Completer</a>s against sequential integral ids. When an
-input is sent to the <code>Isolate</code> for processing, we send the id of it's completer too. When the
-<code>Isolate</code> is done processing, it sends the id back with the output. This way, we can <em>complete</em>
-the correct <code>Completer</code> for each input.</p>
+<p>Things like creating a HttpClient takes quiet a bit of time, so closing/reopening it each
+input is a bad idea. So, instead you create a common resource record in the <a href="../parallelize/Process/setupProcess.html">setupProcess</a>
+to bundle such high-cost setup operations. The output will be passed to all calls of
+<a href="../parallelize/Process/processInput.html">processInput</a>.</p>
+<pre class="language-dart"><code class="language-dart">// Generate high-cost resources like HttpClient.
+
+// Creating a "record" with field names.
+var commonResources = (id: 10, name: 'Example', client: httpClient);
+</code></pre>
 </li>
 <li>
-<p>Again, when the inputs are being sent sequentially, won't the outputs also be received
-sequentially? Not necessarily, the <a href="../parallelize/Process/processInput.html">processInput</a> method is asynchronous, so it's completely
-possible that one inputs processing is on hold while the next input is being processed. We're
-combining parallel processing with async processing to afford a user the best possible
-level of performance and flexibility.</p>
+<p>You destructure the record in <a href="../parallelize/Process/processInput.html">processInput</a> to access the high-cost resources while
+processing inputs.</p>
+<pre class="language-dart"><code class="language-dart">// Full unpacking of a record.
+var (id, name, client) = commonResourceRecord;
+
+// field access of a record.
+var client = commonResourceRecord.client;
+
+// Do Processing
+</code></pre>
+</li>
+<li>
+<p>The <a href="../parallelize/Process/shutdownProcess.html">shutdownProcess</a> is used to clean up resources after processing is done.</p>
 </li>
 </ul>
 </section>
@@ -235,7 +169,7 @@ level of performance and flexibility.</p>
 
 </dt>
 <dd>
-  Returns <code>null</code> when all processing is completed. (bg-proc).
+  Returns <code>null</code> when all processing is completed.
   <div class="features"><span class="feature">no setter</span><span class="feature">override</span></div>
 
 </dd>
@@ -247,7 +181,7 @@ level of performance and flexibility.</p>
 
 </dt>
 <dd>
-  Callback used for processing the input.
+  Callback used for processing individual inputs sent to the spawned process.
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
@@ -271,7 +205,8 @@ level of performance and flexibility.</p>
 
 </dt>
 <dd>
-  Generate common resources required to process individual inputs.
+  Generate common resources required to process individual inputs. The outputs are passed to all
+calls of <a href="../parallelize/Process/processInput.html">processInput</a>.
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
@@ -295,7 +230,8 @@ level of performance and flexibility.</p>
 
 </dt>
 <dd>
-  Callback used for shutting down the processing.
+  Callback used for cleaning up any resources generated in <a href="../parallelize/Process/setupProcess.html">setupProcess</a> after processing
+is done.
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
@@ -330,7 +266,7 @@ level of performance and flexibility.</p>
 
 </dt>
 <dd>
-  Process the given input in a separate process. (bg-proc).
+  Process the given input in a the spawned process.
   <div class="features"><span class="feature">override</span></div>
 
 </dd>
@@ -343,7 +279,8 @@ level of performance and flexibility.</p>
 
 </dt>
 <dd>
-  Kill the spawned process immediately. (im-proc).
+  Kill the spawned process immediately irrespective of weather the current inputs are processed
+or not.
   <div class="features"><span class="feature">override</span></div>
 
 </dd>
@@ -356,7 +293,7 @@ level of performance and flexibility.</p>
 
 </dt>
 <dd>
-  Kill the spawned process after processing current items in queue. (bg-proc).
+  Kill the spawned process after processing current items in queue.
   <div class="features"><span class="feature">override</span></div>
 
 </dd>

@@ -1,5 +1,7 @@
 part of '../parallelize.dart';
 
+/// Spawn multiple processes and automatically distribute the workload among them. Utility class –
+/// wrapper around [Process].
 class ProcessGroup<I, O, CR> implements ParallelizationInterface<I, O, CR> {
   @override
   final Future<CR> Function() setupProcess;

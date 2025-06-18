@@ -53,6 +53,10 @@
 </h1></div>
 
     
+<section class="desc markdown">
+  <p>Spawn multiple processes and automatically distribute the workload among them. Utility class –
+wrapper around <a href="../parallelize/Process-class.html">Process</a>.</p>
+</section>
 
 
     <section>
@@ -102,7 +106,7 @@
 
 </dt>
 <dd>
-  Returns <code>null</code> when all processing is completed. (bg-proc).
+  Returns <code>null</code> when all processing is completed.
   <div class="features"><span class="feature">no setter</span><span class="feature">override</span></div>
 
 </dd>
@@ -114,7 +118,7 @@
 
 </dt>
 <dd>
-  Callback used for processing the input.
+  Callback used for processing individual inputs sent to the spawned process.
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
@@ -138,7 +142,8 @@
 
 </dt>
 <dd>
-  Generate common resources required to process individual inputs.
+  Generate common resources required to process individual inputs. The outputs are passed to all
+calls of <a href="../parallelize/ProcessGroup/processInput.html">processInput</a>.
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
@@ -150,7 +155,8 @@
 
 </dt>
 <dd>
-  Callback used for shutting down the processing.
+  Callback used for cleaning up any resources generated in <a href="../parallelize/ProcessGroup/setupProcess.html">setupProcess</a> after processing
+is done.
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
@@ -185,7 +191,7 @@
 
 </dt>
 <dd>
-  Process the given input in a separate process. (bg-proc).
+  Process the given input in a the spawned process.
   <div class="features"><span class="feature">override</span></div>
 
 </dd>
@@ -198,7 +204,8 @@
 
 </dt>
 <dd>
-  Kill the spawned process immediately. (im-proc).
+  Kill the spawned process immediately irrespective of weather the current inputs are processed
+or not.
   <div class="features"><span class="feature">override</span></div>
 
 </dd>
@@ -211,7 +218,7 @@
 
 </dt>
 <dd>
-  Kill the spawned process after processing current items in queue. (bg-proc).
+  Kill the spawned process after processing current items in queue.
   <div class="features"><span class="feature">override</span></div>
 
 </dd>
