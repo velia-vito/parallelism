@@ -184,4 +184,3 @@ part 'interface/parallelization_interface.dart';
 part 'core/process.dart';
 
 part 'utils/process_group.dart';
-part 'utils/process_workflow.dart';

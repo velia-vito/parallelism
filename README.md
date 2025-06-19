@@ -1,13 +1,17 @@
 # Parallelism: Concurrency made simple
 
+> ⚠️ All relevant documentation is built into the source code, generate docs with dartdoc for
+> ? comprehensive documentation. Or, view documentation on
+> [Github](https://velia-vito.github.io/parallelism/parallelize/) or
+> [Pub.dev](https://pub.dev/documentation/parallelize/latest/parallelize/)
+
 ```ps
 dart doc --output docs
 ```
 
-⚠️ All relevant documentation is built into the source code, generate docs with dartdoc for
-comprehensive documentation. Or, view the documentation online on this repo's Github Pages.
+## Misc Coding Conventions
 
-## Documentation Conventions  
+### Documentation
 
 1. All documentation goes in the dart documentation comments.
 
@@ -50,23 +54,29 @@ users.
    fact related to this function
    ```
 
-### Developer Concerns
+### Variable Naming
 
 1. Don't ignore return values even if you are not using them, use dummy variables (`_`, `__`,
   basically any number of underscores) to handle them
 
-2. Keep file sizes small. Break up large 'design chunks' (eg. color) into smaller
+### Library Structuring
+
+1. Keep file sizes small. Break up large 'design chunks' (eg. color) into smaller
   [mini-libraries](https://dart.dev/guides/libraries/create-packages#organizing-a-package:~:text=Packages%20are%20easiest%20to%20maintain%2C%20extend%2C%20and%20test%20when%20you%20create%20small%2C%20individual%20libraries%2C%20referred%20to%20as%20mini%20libraries)
   (eg. color utils, color palette generation, color theme generation).
 
-2. Mini-libraries are to be collected into a single library (eg. color.dart) using the
+1. Mini-libraries are to be collected into a single library (eg. color.dart) using the
   [`export/show` directives](https://dart.dev/guides/libraries/create-packages#organizing-a-package:~:text=export%20%27src/cascade.dart%27%20show%20Cascade%3B%0Aexport%20%27src/handler.dart%27%20show%20Handler%3B%0Aexport%20%27src/hijack_exception.dart%27%20show%20HijackException%3B%0Aexport%20%27src/middleware.dart%27%20show%20Middleware%2C%20createMiddleware%3B).
 
-## External Resources
+### Related Reading
 
-- [Is Dart multi-threaded?, Martin Fink](https://martin-robert-fink.medium.com/dart-is-indeed-multi-threaded-94e75f66aa1e)
+- The library-level api documentation:
+  [Github](https://velia-vito.github.io/parallelism/parallelize/) |
+  [Pub.dev](https://pub.dev/documentation/parallelize/latest/parallelize/)
 
 - [How Isolates Work, Dart Developer Documentation](https://dart.dev/language/concurrency#how-isolates-work)
+
+- [Is Dart multi-threaded?, Martin Fink](https://martin-robert-fink.medium.com/dart-is-indeed-multi-threaded-94e75f66aa1e)
 
 - [Dart Isolates: What, Why, and How!, Hardik Mehta](https://medium.com/mobilepeople/dart-isolates-what-why-and-how-d390717b64b4)
 
